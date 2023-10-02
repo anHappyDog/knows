@@ -2,9 +2,13 @@ import {createRouter, createWebHistory} from 'vue-router'
 import SignIn from "@/components/LoginBoard/subComponent/SignIn.vue";
 import SignUp from "@/components/LoginBoard/subComponent/SignUp.vue";
 import Test2 from "@/components/LoginBoard/LoginBoard.vue";
-import MainPage from "@/components/MainPage.vue";
+import MainPage from "@/components/MainPage/MainPage.vue";
 import LoginBoard from "@/components/LoginBoard/LoginBoard.vue";
 import UserProfile from "@/components/UserProfile/UserProfile.vue";
+import ArticleRank from "@/components/ArticleRank/ArticleRank.vue";
+import WriteArticle from "@/components/WriteArticle/WriteArticle.vue";
+import Category from "@/components/Category/Category.vue";
+import TaskBoard from "@/components/TaskBoard/TaskBoard.vue";
 
 const routes = [
     {
@@ -41,19 +45,19 @@ const routes = [
     },
     {
         path: "/taskBoard",
-        component: null
+        component: TaskBoard
     },
     {
         path: "/category",
-        component: null
+        component: Category
     },
     {
         path: "/writeArticle",
-        component: null
+        component: WriteArticle
     },
     {
         path: "/articleRank",
-        component: null
+        component: ArticleRank
     }
 
 ]

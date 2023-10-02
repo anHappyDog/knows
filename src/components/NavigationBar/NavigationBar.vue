@@ -10,27 +10,27 @@ onMounted(() => {
 })
 
 const onClickPublishArticle = function () {
-
+  router.push("/writeArticle");
 }
 
 const goToMainPage = function () {
-
+  router.push("/mainPage");
 }
 
 const goToCategoryPage = function () {
-
+  router.push("/category");
 }
 
 const gotoUserProfile = function () {
-
+  router.push("/userProfile");
 }
 
 const gotoTaskBoard = function () {
-
+  router.push("/taskBoard");
 }
 
 const gotoArticleRank = function () {
-
+  router.push("/articleRank");
 }
 
 const onClickSearch = function () {
@@ -44,11 +44,21 @@ const onClickSearch = function () {
     <header id="navigation-bar">
       <div class="just-decorate-for-header"></div>
       <ul id="navigation-choice-list">
-        <li><button class="navigation-choice" @click="goToMainPage">主界面</button></li>
-        <li><button class="navigation-choice" @click="goToCategoryPage">板块</button></li>
-        <li><button class="navigation-choice" @click="gotoUserProfile">个人中心</button></li>
-        <li><button class="navigation-choice" @click="gotoTaskBoard">任务</button></li>
-        <li><button class="navigation-choice" @click="gotoArticleRank">排行</button></li>
+        <li>
+          <button class="navigation-choice" @click="goToMainPage">主界面</button>
+        </li>
+        <li>
+          <button class="navigation-choice" @click="goToCategoryPage">板块</button>
+        </li>
+        <li>
+          <button class="navigation-choice" @click="gotoUserProfile">个人中心</button>
+        </li>
+        <li>
+          <button class="navigation-choice" @click="gotoTaskBoard">任务</button>
+        </li>
+        <li>
+          <button class="navigation-choice" @click="gotoArticleRank">排行</button>
+        </li>
       </ul>
       <div id="search-container">
         <input @keydown.enter="onClickSearch" v-model="searchContent" type="text" placeholder="请搜索" id="search-edit">
@@ -67,16 +77,17 @@ const onClickSearch = function () {
 }
 
 #navigation-bar-container {
-  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
+  margin-bottom: 10px;
+  background-color: white;
 }
 
 #navigation-bar {
   width: 100%;
   top: 0;
-  border: 2px solid black;
+  box-shadow: 0 1px 3px hsla(0, 0%, 7%, .1);
   z-index: 100;
   box-sizing: border-box;
   display: flex;

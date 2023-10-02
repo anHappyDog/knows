@@ -64,9 +64,6 @@ export default {
 </template>
 
 <style scoped>
-* {
-  font-family: "Microsoft YaHei UI", serif;
-}
 
 
 

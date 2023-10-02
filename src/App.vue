@@ -1,10 +1,10 @@
-<script setup>
+<script>
 
 import NavigationBar from "@/components/NavigationBar/NavigationBar.vue";
 </script>
 
 <template>
-    <router-view></router-view>
+  <router-view></router-view>
 </template>
 
 <style scoped>

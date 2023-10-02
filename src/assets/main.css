@@ -1,14 +1,22 @@
+@import "base.css";
 input:-webkit-autofill, select:-webkit-autofill, textarea:-webkit-autofill {
-  -webkit-text-fill-color: black !important;
-  -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
-  background-color: transparent;
-  background-image: none;
-  transition: background-color 50000s ease-in-out 0s;
+    -webkit-text-fill-color: black !important;
+    -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+    background-color: transparent;
+    background-image: none;
+    transition: background-color 50000s ease-in-out 0s;
 }
+
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
-  -webkit-transition-delay: 99999s;
-  -webkit-transition: color 99999s ease-out, background-color 99999s ease-out;
+    -webkit-transition-delay: 99999s;
+    -webkit-transition: color 99999s ease-out, background-color 99999s ease-out;
 }
+
+* {
+    font-family: -apple-system, BlinkMacSystemFont, Helvetica Neue, PingFang SC, Microsoft YaHei, Source Han Sans SC, Noto Sans CJK SC, WenQuanYi Micro Hei, sans-serif;
+
+}
+

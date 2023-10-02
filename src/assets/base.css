@@ -1,1 +1,6 @@
 /* color palette from <https://github.com/vuejs/theme> */
+body {
+    -webkit-tap-highlight-color: rgba(18,18,18,0);
+    background-color: #f5f5f5;
+}
+
