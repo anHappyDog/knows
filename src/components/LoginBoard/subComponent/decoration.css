@@ -1,0 +1,39 @@
+:root {
+  --primary-input-color : black;
+    --primary-username-color : var(--primary-input-color);
+    --primary-password-color: var(--primary-input-color);
+    --primary-email-color : var(--primary-input-color);
+    --primary-phone-color : var(--primary-input-color);
+}
+input {
+    font-size: 18px;
+    background-color: transparent;
+    border: none;
+    border-bottom: 2px solid black;
+    padding: 4px;
+    margin: 18px;
+    outline: none;
+    transition: 0.1s;
+    color: var(--primary-input-color);
+}
+
+input:autofill {
+    background: transparent;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    transition: background-color 500000s;
+    -webkit-text-fill-color: black !important;
+    background: transparent !important;
+}
+
+input:hover, input:focus {
+    transform: scale(1.05);
+}
+
+input::placeholder {
+    color: var(--primary-input-color);
+}
