@@ -79,13 +79,14 @@ const onClickSearch = function () {
 #navigation-bar-container {
   top: 0;
   left: 0;
-  width: 100%;
+  min-width: 1500px;
   margin-bottom: 10px;
   background-color: white;
 }
 
 #navigation-bar {
   width: 100%;
+  height: 54px;
   top: 0;
   box-shadow: 0 1px 3px hsla(0, 0%, 7%, .1);
   z-index: 100;

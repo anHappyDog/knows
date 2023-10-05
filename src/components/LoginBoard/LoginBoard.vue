@@ -1,6 +1,6 @@
 <script>
 import {onBeforeUnmount, onBeforeUpdate, onMounted, ref} from "vue";
-import backgroundPng from '@/assets/1.png';
+import backgroundPng from '@/assets/cc.jpg';
 import {useRouter, useRoute, onBeforeRouteUpdate} from "vue-router";
 import SignIn from "@/components/LoginBoard/subComponent/SignIn.vue";
 
@@ -13,10 +13,10 @@ export default {
     const route = useRoute();
     let underline;
     onMounted(() => {
-      document.body.style.backgroundImage = `url(${backgroundPng})`;
-      document.body.style.backgroundSize = "cover";
-      document.body.style.backgroundRepeat = "no-repeat";
-      document.body.style.height = "95vh";
+      // document.body.style.backgroundImage = `url(${backgroundPng})`;
+      // document.body.style.backgroundSize = "cover";
+      // document.body.style.backgroundRepeat = "no-repeat";
+      // document.body.style.height = "95vh";
       underline = document.getElementById("underline");
     });
 
@@ -93,12 +93,12 @@ export default {
 #login-board {
   display: flex;
   position: absolute;
-  top: 20%;
-  left: 60%;
+  top: 24%;
+  left: 33%;
   width: 500px;
   height: 400px;
-  border: 2px solid black;
-  box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.5);
+  border: 1px solid #e4e7ed;
+  box-shadow: 0 1px 3px hsla(0, 0%, 7%, .1);
 
   & #board-decorate {
     background-image: url("@/assets/5.jpg");

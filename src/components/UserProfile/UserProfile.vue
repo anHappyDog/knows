@@ -1,9 +1,11 @@
 <script setup>
-
+import Test from "@/components/Test.vue"
 import NavigationBar from "@/components/NavigationBar/NavigationBar.vue";
 import {computed, onMounted, ref} from "vue";
 import downArrow from "@/assets/downArrow.svg";
 import upArrow from "@/assets/upArrow.svg";
+import ArticleList from "@/components/ArticleList/ArticleList.vue";
+import GoTopBtn from "@/components/SubComponents/GoTopBtn.vue";
 
 const userInfoHeight = ref(0 + "px");
 const loadBtnImg = ref(downArrow);
@@ -35,7 +37,12 @@ const onClickLoadBtn = function () {
 
   }
 }
+const onClickUploadProfileBtn = function () {
 
+}
+const onChangeInfoBtn = function () {
+
+}
 </script>
 
 <template>
@@ -52,6 +59,7 @@ const onClickLoadBtn = function () {
         <div id="user-info-container">
           <div id="avatar-container">
             <div id="avatar-img-container">
+
             </div>
 
           </div>
@@ -70,9 +78,14 @@ const onClickLoadBtn = function () {
             <button id="change-info-btn" @click="">修改资料</button>
           </div>
         </div>
+        <div id="article-card-list">
+                  <article-list/>
+
+        </div>
+
       </div>
     </div>
-
+    <GoTopBtn />
   </main>
 
 </template>
@@ -96,15 +109,19 @@ const onClickLoadBtn = function () {
   }
 }
 
-
+#article-card-list {
+  background-color: whitesmoke;
+  margin-top: 10px;
+}
 #profile-img-container {
   height: 200px;
+  background-color: rgb(245, 245, 24,10%);
 
   & #load-profile-img-btn {
     background-color: transparent;
     position: absolute;
-    top: 17%;
-    left: 78%;
+    top: 121px;
+    left: 1180px;
     font-size: 17px;
     border-radius: 4px;
     padding: 4px 8px;
@@ -118,9 +135,9 @@ const onClickLoadBtn = function () {
   position: absolute;
   width: 140px;
   height: 140px;
-  border: 2px solid greenyellow;
   left: 13%;
   top: 28%;
+    box-shadow: 0 1px 3px hsla(0, 0%, 7%, .1);
 }
 
 #user-info-container {
@@ -131,8 +148,8 @@ const onClickLoadBtn = function () {
   background-color: white;
   & h2 {
     position: absolute;
-    top: 38%;
-    left: 24%;
+    top: 272px;
+    left: 363px;
   }
 
   & #load-Info-btn {
@@ -144,12 +161,17 @@ const onClickLoadBtn = function () {
   & #avatar-container {
     border-radius: 5px;
     display: flex;
+    position: absolute;
+    top: 200px;
+    left: 198px;
     & #avatar-img-container {
       margin: 1%;
       width: 98%;
-      border: 2px solid red;
       border-radius: 5px;
       overflow: hidden;
+      background-image: url("@/assets/avatar.jpg");
+      background-size: cover;
+      cursor: pointer;
     }
 
   }
@@ -183,7 +205,7 @@ const onClickLoadBtn = function () {
   display: flex;
   align-items: center;
   justify-content: center;
-
+  width: 1500px;
   & #user-profile {
     width: 80%;
 
