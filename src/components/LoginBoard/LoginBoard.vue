@@ -1,179 +1,139 @@
-<script>
-import {onBeforeUnmount, onBeforeUpdate, onMounted, ref} from "vue";
-import backgroundPng from '@/assets/cc.jpg';
-import {useRouter, useRoute, onBeforeRouteUpdate} from "vue-router";
-import SignIn from "@/components/LoginBoard/subComponent/SignIn.vue";
-
-
-export default {
-  setup() {
-    const username = ref('');
-    const password = ref('');
-    const router = useRouter();
-    const route = useRoute();
-    let underline;
-    onMounted(() => {
-      // document.body.style.backgroundImage = `url(${backgroundPng})`;
-      // document.body.style.backgroundSize = "cover";
-      // document.body.style.backgroundRepeat = "no-repeat";
-      // document.body.style.height = "95vh";
-      underline = document.getElementById("underline");
-    });
-
-    const changeToSignIn = function () {
-      router.push("/loginBoard/signIn");
-      underline.style.transform = `translateX(0px)`;
-    }
-    const changeToSignUp = function () {
-      router.push("/loginBoard/signUp");
-      underline.style.transform = `translateX(93px)`;
-
-    }
-    onBeforeUnmount(() => {
-      document.body.style.backgroundImage = `none`;
-
-    })
-    return {username, password,changeToSignUp,changeToSignIn};
-  },
-
+<script setup>
+import {ref, onMounted, onBeforeMount} from "vue";
+import {useRouter} from "vue-router";
+let decorateLine;
+const router = useRouter();
+const goSignIn = function () {
+  decorateLine.style.left = "15%";
+  router.push("signIn");
 }
-
+const goSignUp = function () {
+  decorateLine.style.left = "63%";
+  router.push("signUp");
+}
+onMounted(()=> {
+  decorateLine = document.getElementById("choice-decorate-line");
+  if (router.currentRoute.value.name === "signUp") {
+      decorateLine.style.left = "63%";
+  }
+})
 
 </script>
 
 <template>
-  <div id="just-title-wrap">
-    <p id="just-title-1">You can (not) redo.</p>
-    <p id="just-title-2">You can (not) advance</p>
-    <p id="just-title-3">You are (not) alone</p>
-
-  </div>
-<!--  <div id="pic-decorate"></div>-->
-  <div id="login-board">
-    <div id="board-decorate"></div>
-    <div id="info-input">
-      <div id="change-sign-in-up">
-        <button class="sign-in-or-up" @click="changeToSignIn">登录</button>
-        <div id="just-decorate-for-line"></div>
-        <button class="sign-in-or-up" @click="changeToSignUp">注册</button>
+  <div class="gradient">
+    <div id="login-board-container">
+      <div id="login-choice-container">
+        <button @click="goSignIn">登录</button>
+        <div id="decorate-line"></div>
+        <button @click="goSignUp">注册</button>
+        <div id="choice-decorate-line"></div>
       </div>
-      <div id="underline"></div>
-      <router-view id="user-input-view"></router-view>
+      <router-view v-slot="{ Component }">
+        <transition mode="out-in">
+            <component :is="Component"/>
+        </transition>
+      </router-view>
+      <div id="decorate-container">
+        <p id="saying">You can (not) get everything you want</p>
+      </div>
+
     </div>
   </div>
 </template>
 
 <style scoped>
+@import "LoginBoard.css";
 
-
-
-#just-title-wrap {
-  position: absolute;
-  color: antiquewhite;
-  font-size: 30px;
-  top: 10px;
-  left: 60%;
-  width: 300px;
-
-  & #just-title-2 {
-    width: 400px;
-    position: absolute;
-    top: 20%;
-    left: 30%;
+@keyframes gradientBG {
+  0% {
+    background-position: 0 50%;
   }
-
-  & #just-title-3 {
-    width: 400px;
-    position: absolute;
-    top: 40%;
-    left: 70%;
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
   }
 }
+#choice-decorate-line {
+  border: 2px solid black;
+  width: 20%;
+  position: absolute;
+  top:120%;
+  left: 15%;
+  transition: ease-in-out 0.1s ;
+}
+#saying {
+  color: #c9cfd3;
+  font-size: 14px;
+  user-select: none;
+}
 
-#login-board {
+#decorate-container {
   display: flex;
   position: absolute;
-  top: 24%;
+  top: 85%;
+  width: 80%;
+  height: 8px;
+  left: 10%;
+  justify-content: center;
+  background-color: #e4e7ed;
+
+}
+
+.gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 600px;
+  background: linear-gradient(-45deg, rgb(135, 133, 138), rgba(194, 194, 196, 0.7), rgba(225, 227, 227, 0.75), rgb(210, 228, 231), rgb(255 255 255));
+  background-size: 600% 600%;
+  animation: gradientBG 5s ease infinite;
+}
+
+#login-choice-container {
+  display: flex;
+  position: absolute;
+  justify-content: center;
+  top: 6%;
+  left: 30%;
+  right: 30%;
+  width: 40%;
+
+  & #decorate-line {
+    border: 2px solid black;
+  }
+
+  & button {
+    margin: 0 20px;
+    border: none;
+    background-color: transparent;
+    font-size: 20px;
+    transition: scale 0.1s;
+    cursor: pointer;
+  }
+
+  & button:hover {
+    transform: scale(1.08);
+  }
+
+}
+
+#login-board-container {
+  background-color: white;
+  border: 2px solid #e4e7ed;
+  box-shadow: 0 1px 3px hsla(0, 0%, 7%, .1);;
+  display: flex;
+  position: absolute;
+  flex-direction: column;
+  top: 16%;
   left: 33%;
   width: 500px;
-  height: 400px;
-  border: 1px solid #e4e7ed;
-  box-shadow: 0 1px 3px hsla(0, 0%, 7%, .1);
-
-  & #board-decorate {
-    background-image: url("@/assets/5.jpg");
-    background-size: cover;
-    width: 40%;
-  }
-
-
-}
-
-#info-input {
-  width: 60%;
+  height: 450px;
   justify-content: center;
-
-  backdrop-filter: blur(20px);
-
-  & #change-sign-in-up {
-    display: flex;
-    position: relative;
-    top: 5%;
-    left: 5%;
-
-    & #just-decorate-for-line {
-      border: 2px solid black;
-    }
-  }
-
-}
-
-.sign-in-or-up {
-  font-size: 32px;
-  border: none;
-
-  background-color: transparent;
-  padding: 0 14px;
-  transition: 0.1s;
-}
-
-.sign-in-or-up:hover {
-  transform: scale(1.05);
-}
-
-.sign-in-or-up:active {
-  transform: scale(0.95);
-}
-
-.sign-in-or-up:last-child {
-  border-right: none;
-}
-
-#underline {
-  position: absolute;
-  transition: transform 0.1s ease-in-out;
-  width: 60px;
-  top: 18%;
-  left: 10%;
-  border: 2px solid black;
-}
-
-#user-input-view {
-  position: absolute;
-  top: 20%;
-  left: 0;
-  margin: 10px;
-}
-
-@media(min-width: 1280px) {
-
-#pic-decorate {
-  background-image: url("@/assets/111.jpg");
-  background-size: cover;
-  width: 600px;
-  height: 400px;
-
-}
 }
 
 </style>

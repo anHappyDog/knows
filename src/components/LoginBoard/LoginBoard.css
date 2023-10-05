@@ -1,0 +1,80 @@
+@import "@/assets/main.css";
+
+.input-info {
+    outline: none;
+    border: none;
+    border-bottom: 1px solid;
+    border-bottom-color: #e4e7ed;
+    margin: 10px;
+    font-size: 16px;
+    padding-left: 6px;
+    transition: 0.1s;
+}
+
+input[class="input-info error"] {
+    border-bottom: 1px solid;
+    border-bottom-color: #c45656;
+    color: #c45656;
+}
+
+input[class="input-info error"]::placeholder {
+    color: #c45656;
+}
+
+
+
+.input-info:hover, .input-info:focus {
+    transform: scale(1.03);
+}
+
+
+#sign-container {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    left: 20%;
+    width: 60%;
+    justify-content: center;
+}
+
+
+.sign-btn {
+    margin: 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* 自定义切换动画 */
+/* 元素刚进入的状态 */
+.v-enter,
+.v-leave-to {
+    opacity: 0;
+    transform: translateX(-10px);
+}
+/* 被激活时 */
+.v-enter-active {
+    transition: all 0.15s;
+}
+/* 元素完全进入后的状态 */
+.v-enter-to,
+.v-leave {
+    opacity: 1;
+    transform: translateX(0px);
+}
+/* 元素离开前的状态 */
+/* .v-leave {
+    transform: translateX(0px);
+    opacity: 1;
+} */
+.v-leave-active {
+    transition: all 0.15s;
+}
+/* 元素离开后的状态 */
+/* .v-leave-to {
+    opacity: 0;
+    transform: translateX(-30px);
+} */
+
+.error-show {
+    color: #c45656;
+}

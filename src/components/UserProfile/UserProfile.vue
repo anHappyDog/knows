@@ -1,5 +1,4 @@
 <script setup>
-import Test from "@/components/Test.vue"
 import NavigationBar from "@/components/NavigationBar/NavigationBar.vue";
 import {computed, onMounted, ref} from "vue";
 import downArrow from "@/assets/downArrow.svg";
