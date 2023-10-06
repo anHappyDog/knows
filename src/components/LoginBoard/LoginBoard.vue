@@ -68,6 +68,7 @@ onMounted(()=> {
   color: #c9cfd3;
   font-size: 14px;
   user-select: none;
+  -webkit-user-select:none;
 }
 
 #decorate-container {
@@ -125,7 +126,7 @@ onMounted(()=> {
 #login-board-container {
   background-color: white;
   border: 2px solid #e4e7ed;
-  box-shadow: 0 1px 3px hsla(0, 0%, 7%, .1);;
+  box-shadow: 0 1px 3px hsla(0, 0%, 7%, .1);
   display: flex;
   position: absolute;
   flex-direction: column;

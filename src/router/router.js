@@ -9,6 +9,7 @@ import WriteArticle from "@/components/WriteArticle/WriteArticle.vue";
 import Category from "@/components/Category/Category.vue";
 import TaskBoard from "@/components/TaskBoard/TaskBoard.vue";
 import ArticleList from "@/components/ArticleList/ArticleList.vue";
+import FriendBoard from "@/components/FriendBoard/FriendBoard.vue";
 
 
 const routes = [
@@ -59,6 +60,10 @@ const routes = [
     {
         path: "/articleRank",
         component: ArticleRank
+    },
+    {
+        path: "/friendBoard",
+        component: FriendBoard,
     },
     // {
     //     path: "/test",

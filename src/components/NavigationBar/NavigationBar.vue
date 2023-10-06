@@ -9,6 +9,10 @@ const router = useRouter();
 onMounted(() => {
 })
 
+const onClickFriend = function () {
+  router.push("/friendBoard");
+}
+
 const onClickPublishArticle = function () {
   router.push("/writeArticle");
 }
@@ -62,9 +66,10 @@ const onClickSearch = function () {
       </ul>
       <div id="search-container">
         <input @keydown.enter="onClickSearch" v-model="searchContent" type="text" placeholder="请搜索" id="search-edit">
-        <button id="search-btn" @click="onClickSearch"></button>
+        <button title="搜索按钮" @click="onClickSearch" id="navigation-search-btn"></button>
       </div>
       <button id="publish-article" @click="onClickPublishArticle">发表文章</button>
+      <button title="好友按钮" @click="onClickFriend" id="navigation-friend-btn"></button>
       <div class="just-decorate-for-header"></div>
     </header>
   </div>
@@ -122,12 +127,13 @@ const onClickSearch = function () {
       background-color: transparent;
     }
 
-    & button {
+    & #navigation-search-btn {
       background-image: url("@/assets/search.svg");
       background-size: cover;
       border: none;
       padding-left: 16px;
     }
+
 
     & button:hover {
       cursor: pointer;
@@ -143,6 +149,18 @@ const onClickSearch = function () {
     font-size: 16px;
   }
 
+  & #navigation-friend-btn {
+    width: 32px;
+    height: 32px;
+    margin-left: 16px;
+    background-image: url("@/assets/friend.svg");
+    border-radius: 50%;
+    background-size: cover;
+    border: none;
+    padding-left: 16px;
+    cursor: pointer;
+  }
+
   & #publish-article:hover {
     background-color: wheat;
 
@@ -151,7 +169,7 @@ const onClickSearch = function () {
 
 .just-decorate-for-header {
   margin: 0 40px;
-  width: 20%;
+  width: 15%;
   border: 2px solid black;
 }
 

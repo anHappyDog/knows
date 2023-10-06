@@ -26,7 +26,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <button id="go-top-btn" @click="backTop" :class="backTopFlag ? 'active' : 'inactive'"></button>
+  <button id="go-top-btn" title="回到顶部按钮" @click="backTop" :class="backTopFlag ? 'active' : 'inactive'"></button>
 </template>
 
 <style scoped>
