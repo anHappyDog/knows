@@ -1,4 +1,4 @@
-import {createRouter, createWebHistory} from 'vue-router'
+import {createRouter, createWebHashHistory} from 'vue-router'
 import SignIn from "@/components/LoginBoard/SignIn.vue";
 import SignUp from "@/components/LoginBoard/SignUp.vue";
 import MainPage from "@/components/MainPage/MainPage.vue";
@@ -10,12 +10,19 @@ import Category from "@/components/Category/Category.vue";
 import TaskBoard from "@/components/TaskBoard/TaskBoard.vue";
 import ArticleList from "@/components/ArticleList/ArticleList.vue";
 import FriendBoard from "@/components/FriendBoard/FriendBoard.vue";
+import ArticleShow from "@/components/ArticleShow.vue";
+import SearchResult from "@/components/SearchResult/SearchResult.vue";
+import axios from "axios";
+import {useCookies} from 'vue3-cookies';
+import UploadImgBoard from "@/components/WriteArticle/UploadImgBoard.vue";
 
+
+const cookies = useCookies();
 
 const routes = [
     {
         path: "/",
-        redirect: "/loginBoard"
+        redirect: "/loginBoard/signIn"
     },
     {
         path: "/loginBoard",
@@ -65,33 +72,59 @@ const routes = [
         path: "/friendBoard",
         component: FriendBoard,
     },
-    // {
-    //     path: "/test",
-    //     component: Test,
-    //     children: [
-    //         {
-    //             path: "signIn",
-    //             name : "signIn",
-    //             component: TestSignIn
-    //         },
-    //         {
-    //             path: "signUp",
-    //             name:"signUp",
-    //             component: TestSignUp
-    //         }
-    //
-    //     ]
-    // },
+    {
+        path: "/article/:articleId",
+        component: ArticleShow
+    },
+    {
+        path: "/searchResult",
+        component: SearchResult
+    },
     {
         path: "/articleList",
         component: ArticleList
-    }
+    },
+    {
+        path: "/uploadTest",
+        component: UploadImgBoard
+    },
+
 
 ]
 
 const router = createRouter({
-    history: createWebHistory(),
+    history: createWebHashHistory(),
     routes
+});
+
+const isValidSessionId = async function () {
+    try {
+        const result = await axios.get(axios.defaults.baseURL + "/api/validSessionToken");
+        return result.data;
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+
+
+//应该要在失败后做出一些提示
+router.beforeEach((to, from, next) => {
+    if (to.path === "/loginBoard/signIn") {
+        next();
+    } else {
+        isValidSessionId().then(
+            result => {
+                if (result["status"] === 0) {
+                    next();
+                } else {
+                    next("/loginBoard/signIn");
+                }
+            }
+        ).catch(err => {
+            console.log(err);
+        })
+    }
 });
 
 export default router;

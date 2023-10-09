@@ -1,6 +1,7 @@
 <script setup>
 import {useRouter} from "vue-router";
 import {ref, watch} from "vue";
+import axios from 'axios';
 
 const router = useRouter();
 const username = ref('');
@@ -19,8 +20,18 @@ const restorePasswordError = function () {
   passwordErrMessage.value = "";
 }
 
-const getResult = function (api, method) {
-  return {status: 0};
+const getResult = async function () {
+  try {
+    const response = await axios.post(`http://127.0.0.1:8000/api/signIn`, {
+      username: username.value,
+      password: password.value
+    });
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+
 }
 
 const restoreUsernameError = function () {
@@ -53,16 +64,20 @@ const onClickSignInBtn = function () {
     return;
   }
   //get result from backend
-  let result = getResult();
-  if (result.status === 0) {
-    router.push("/mainPage");
-  } else if (result.status === -1) {
-    handleUsernameError("用户名不存在");
-  } else if (result.status === -2) {
-    handlePasswordError("密码不正确");
-  } else if (result.status === -3) {
-    //其他错误。
-  }
+  getResult().then(result => {
+    console.log(result.status);
+    if (result.status === 0) {
+      router.push("/mainPage");
+    } else if (result.status === -1) {
+      handleUsernameError("用户名不存在");
+    } else if (result.status === -2) {
+      handlePasswordError("密码不正确");
+    } else if (result.status === -3) {
+      //其他错误。
+    }
+  }).catch(err => {
+    console.log(err);
+  });
 }
 
 
@@ -84,6 +99,7 @@ const onClickSignInBtn = function () {
 
 <style scoped>
 @import "LoginBoard.css";
+
 #title {
   color: #e4e7ed;
   font-weight: bold;
@@ -94,6 +110,7 @@ const onClickSignInBtn = function () {
   top: -40%;
   user-select: none;
 }
+
 #forgot-password {
   position: absolute;
   top: 100%;

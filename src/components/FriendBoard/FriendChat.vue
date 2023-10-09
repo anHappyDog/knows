@@ -61,14 +61,14 @@ const props = defineProps({
 
 #input-textarea {
   background-color: transparent;
-  border: 2px  solid black;
   resize: none;
   width: 99%;
   height: auto;
+  padding: 10px;
+  font-size: 15px;
 }
 
 #chat-send-btn {
-  border: 2px solid black;
   padding: 7px 14px;
   cursor: pointer;
 }

@@ -42,6 +42,24 @@ const onClickUploadProfileBtn = function () {
 const onChangeInfoBtn = function () {
 
 }
+const cardList = ref([
+  {id: 1, title: 'Card 1', header: "asd1", authorName: "123", publishTime: "2023-01-01", likeCount: 1, commentCount: 1},
+  {id: 2, title: 'Card 2', header: "asd2", authorName: "123", publishTime: "2023-01-01", likeCount: 1, commentCount: 1},
+  {id: 3, title: 'Card 3', header: "asd3", authorName: "123", publishTime: "2023-01-01", likeCount: 1, commentCount: 1},
+  {id: 4, title: 'Card 1', header: "asd4", authorName: "123", publishTime: "2023-01-01", likeCount: 1, commentCount: 1},
+  {id: 5, title: 'Card 2', header: "asd5", authorName: "123", publishTime: "2023-01-01", likeCount: 1, commentCount: 1},
+  {id: 6, title: 'Card 3', header: "asd6", authorName: "123", publishTime: "2023-01-01", likeCount: 1, commentCount: 1},
+  {id: 7, title: 'Card 1', header: "asd7", authorName: "123", publishTime: "2023-01-01", likeCount: 1, commentCount: 1},
+  {id: 8, title: 'Card 2', header: "asd8", authorName: "123", publishTime: "2023-01-01", likeCount: 1, commentCount: 1},
+  {id: 9, title: 'Card 3', header: "asd9", authorName: "123", publishTime: "2023-01-01", likeCount: 1, commentCount: 1},
+  {id: 10, title: 'Card 1', header: "asd10", authorName: "123", publishTime: "2023-01-01", likeCount: 1, commentCount: 1},
+  {id: 11, title: 'Card 2', header: "asd11", authorName: "123", publishTime: "2023-01-01", likeCount: 1, commentCount: 1},
+  {id: 12, title: 'Card 3', header: "asd12", authorName: "123", publishTime: "2023-01-01", likeCount: 1, commentCount: 1},
+
+]);
+
+
+
 </script>
 
 <template>
@@ -78,13 +96,13 @@ const onChangeInfoBtn = function () {
           </div>
         </div>
         <div id="article-card-list">
-                  <article-list/>
+          <article-list :page-size="10" :card-list="cardList"/>
 
         </div>
 
       </div>
     </div>
-    <GoTopBtn />
+    <GoTopBtn/>
   </main>
 
 </template>
@@ -97,10 +115,10 @@ const onChangeInfoBtn = function () {
   padding: 5px;
   cursor: pointer;
   color: #8493a5;
-  position: relative;
+  position: absolute;
   transition: background-color 0.1s;
   bottom: 5%;
-  left: 5%;
+  left: 8%;
 
   & #load-Info-btn-decorate {
     width: 15px;
@@ -112,43 +130,37 @@ const onChangeInfoBtn = function () {
   background-color: whitesmoke;
   margin-top: 10px;
 }
+
 #profile-img-container {
   height: 200px;
-  background-color: rgb(245, 245, 24,10%);
+  background-color: rgb(245, 245, 24, 10%);
 
   & #load-profile-img-btn {
     background-color: transparent;
     position: absolute;
     top: 121px;
-    left: 1180px;
+    left: 1130px;
     font-size: 17px;
     border-radius: 4px;
     padding: 4px 8px;
   }
-    & #load-profile-img-btn:hover {
-      background-color: rgba(0,0,0,0.1);
+
+  & #load-profile-img-btn:hover {
+    background-color: rgba(0, 0, 0, 0.1);
   }
 }
 
-#avatar-container {
-  position: absolute;
-  width: 140px;
-  height: 140px;
-  left: 13%;
-  top: 28%;
-    box-shadow: 0 1px 3px hsla(0, 0%, 7%, .1);
-}
 
 #user-info-container {
   box-shadow: 0 1px 3px hsla(0, 0%, 7%, .1);
   min-height: 100px;
-
+  display: flex;
   flex-direction: column;
   background-color: white;
+  position: relative;
   & h2 {
     position: absolute;
-    top: 272px;
-    left: 363px;
+    left: 22%;
   }
 
   & #load-Info-btn {
@@ -158,11 +170,14 @@ const onChangeInfoBtn = function () {
   }
 
   & #avatar-container {
+    width: 140px;
+    height: 140px;
     border-radius: 5px;
     display: flex;
     position: absolute;
-    top: 200px;
-    left: 198px;
+    left: 50px;
+    top: -60px;
+    box-shadow: 0 1px 3px hsla(0, 0%, 7%, .1);
     & #avatar-img-container {
       margin: 1%;
       width: 98%;
@@ -182,10 +197,13 @@ const onChangeInfoBtn = function () {
     padding: 6px 8px;
     background-color: transparent;
     border-radius: 4px;
+    position: absolute;
+    left: 16%;
+    top: 40px;
   }
 
   & #change-info-btn:hover {
-    background-color: rgba(0,0,0,0.1);
+    background-color: rgba(0, 0, 0, 0.1);
   }
 }
 
@@ -194,7 +212,7 @@ const onChangeInfoBtn = function () {
   transition: height 300ms ease-out 0s;
   height: 0;
   padding-top: 60px;
-
+  padding-left: 40px;
   & p {
     margin-left: 200px;
   }
@@ -205,8 +223,9 @@ const onChangeInfoBtn = function () {
   align-items: center;
   justify-content: center;
   width: 1500px;
+
   & #user-profile {
-    width: 80%;
+    width: 70%;
 
   }
 }

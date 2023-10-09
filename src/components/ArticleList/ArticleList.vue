@@ -1,37 +1,33 @@
 <script setup>
-import {computed, ref,watch} from "vue";
+import {computed, ref, watch} from "vue";
 
-const cardList = ref([
-  {id: 1, title: 'Card 1', header: "asd1", authorName: "123", publishTime: "2023-01-01", likeCount: 1, commentCount: 1},
-  {id: 2, title: 'Card 2', header: "asd2", authorName: "123", publishTime: "2023-01-01", likeCount: 1, commentCount: 1},
-  {id: 3, title: 'Card 3', header: "asd3", authorName: "123", publishTime: "2023-01-01", likeCount: 1, commentCount: 1},
-  {id: 4, title: 'Card 1', header: "asd4", authorName: "123", publishTime: "2023-01-01", likeCount: 1, commentCount: 1},
-  {id: 5, title: 'Card 2', header: "asd5", authorName: "123", publishTime: "2023-01-01", likeCount: 1, commentCount: 1},
-  {id: 6, title: 'Card 3', header: "asd6", authorName: "123", publishTime: "2023-01-01", likeCount: 1, commentCount: 1},
-  {id: 7, title: 'Card 1', header: "asd7", authorName: "123", publishTime: "2023-01-01", likeCount: 1, commentCount: 1},
-  {id: 8, title: 'Card 2', header: "asd8", authorName: "123", publishTime: "2023-01-01", likeCount: 1, commentCount: 1},
-  {id: 9, title: 'Card 3', header: "asd9", authorName: "123", publishTime: "2023-01-01", likeCount: 1, commentCount: 1},
-  {id: 10, title: 'Card 1', header: "asd10", authorName: "123", publishTime: "2023-01-01", likeCount: 1, commentCount: 1},
-  {id: 11, title: 'Card 2', header: "asd11", authorName: "123", publishTime: "2023-01-01", likeCount: 1, commentCount: 1},
-  {id: 12, title: 'Card 3', header: "asd12", authorName: "123", publishTime: "2023-01-01", likeCount: 1, commentCount: 1},
+const props = defineProps({
+  cardList: {
+    type: Array,
+    required: true
+  },
+  pageSize: {
+    type: Number,
+    required: true
+  },
 
-]);
+});
 
-const pageSize = ref(10);
+
 const curPage = ref(1);
 const pageCount = computed(() => {
-  return cardList.value.length / pageSize.value;
+  return props.cardList.length / props.pageSize;
 });
 const totalCard = computed(() => {
-  return cardList.value.length;
+  return props.cardList.length;
 });
 
-watch(curPage,(value, oldValue, onCleanup)=>{
+watch(curPage, (value, oldValue, onCleanup) => {
   console.log(value);
 });
 
-const showCards = computed(()=>{
- return cardList.value.slice((curPage.value - 1) * pageSize.value,curPage.value * pageSize.value);
+const showCards = computed(() => {
+  return props.cardList.slice((curPage.value - 1) * props.pageSize, curPage.value * props.pageSize);
 });
 
 const onPageChanged = function (val) {
@@ -43,7 +39,7 @@ const onPageChanged = function (val) {
 </script>
 
 <template>
-  <el-card v-for="item in showCards" :key="item.id">
+  <el-card style="padding: 0;" v-for="item in showCards" :key="item.id">
     <div class="author-info">
       <img class="author-avatar" src="@/assets/avatar.jpg">
       <p class="author-name">{{ item.authorName }}</p>
@@ -55,7 +51,6 @@ const onPageChanged = function (val) {
       <span class="comment-count">评论数:{{ item.commentCount }}</span>
       <span class="category">所属板块:板块1</span>
     </div>
-
   </el-card>
   <div id="pagination-wrap">
     <el-pagination id="pagination"
@@ -63,7 +58,7 @@ const onPageChanged = function (val) {
                    :page-count="pageCount"
                    layout="prev,pager,next"
                    :total="totalCard"
-                   @current-change = "onPageChanged"
+                   @current-change="onPageChanged"
     />
   </div>
 
@@ -78,13 +73,6 @@ const onPageChanged = function (val) {
   margin: 8px 8px 18px;
 }
 
-el-card {
-  display: block;
-
-  width: 95%;
-  text-align: center;
-  border-bottom: 2px solid #f5f5f5;
-}
 
 .author-info {
   display: flex;
@@ -130,12 +118,13 @@ el-card {
   left: 80%;
 }
 
-.like-count,.comment-count {
-  margin-right: 24px;
+.like-count, .comment-count {
+  margin-right: 60px;
 }
+
 .category {
   position: relative;
-  left: 70%;
+  left: 60%;
 }
 
 </style>

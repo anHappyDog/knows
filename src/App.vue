@@ -1,6 +1,9 @@
 <script>
-
+import {onMounted} from "vue";
+import axios from "axios";
 import NavigationBar from "@/components/NavigationBar/NavigationBar.vue";
+
+
 </script>
 
 <template>
@@ -18,6 +21,7 @@ header {
     display: flex;
     place-items: center;
   }
+
   header .wrapper {
     display: flex;
     place-items: flex-start;

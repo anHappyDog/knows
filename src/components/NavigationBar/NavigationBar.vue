@@ -2,11 +2,15 @@
 import {onMounted, ref} from "vue";
 import {useRouter} from "vue-router";
 
-const searchContent = ref("");
+const searchKeyWord = ref("");
 const router = useRouter();
-
+const fixDiv = ref();
+const scrollHeader = ref();
 
 onMounted(() => {
+  window.addEventListener("scroll", () => {
+    scrollHeader.value.style.left = `${-window.scrollX}px`;
+  })
 })
 
 const onClickFriend = function () {
@@ -38,42 +42,45 @@ const gotoArticleRank = function () {
 }
 
 const onClickSearch = function () {
-  console.log(searchContent.value);
+  router.push({path: "/searchResult", query: {q: searchKeyWord.value}})
 }
 
 </script>
 
 <template>
-  <div id="navigation-bar-container">
-    <header id="navigation-bar">
-      <div class="just-decorate-for-header"></div>
-      <ul id="navigation-choice-list">
-        <li>
-          <button class="navigation-choice" @click="goToMainPage">主界面</button>
-        </li>
-        <li>
-          <button class="navigation-choice" @click="goToCategoryPage">板块</button>
-        </li>
-        <li>
-          <button class="navigation-choice" @click="gotoUserProfile">个人中心</button>
-        </li>
-        <li>
-          <button class="navigation-choice" @click="gotoTaskBoard">任务</button>
-        </li>
-        <li>
-          <button class="navigation-choice" @click="gotoArticleRank">排行</button>
-        </li>
-      </ul>
-      <div id="search-container">
-        <input @keydown.enter="onClickSearch" v-model="searchContent" type="text" placeholder="请搜索" id="search-edit">
-        <button title="搜索按钮" @click="onClickSearch" id="navigation-search-btn"></button>
+  <div class="navigation-scroll-container">
+    <div ref="fixDiv" id="navigation-bar-container">
+      <div ref="scrollHeader" id="navigation-bar">
+        <div class="just-decorate-for-header"></div>
+        <ul id="navigation-choice-list">
+          <li>
+            <button class="navigation-choice" @click="goToMainPage">主界面</button>
+          </li>
+          <li>
+            <button class="navigation-choice" @click="goToCategoryPage">板块</button>
+          </li>
+          <li>
+            <button class="navigation-choice" @click="gotoUserProfile">个人中心</button>
+          </li>
+          <li>
+            <button class="navigation-choice" @click="gotoTaskBoard">任务</button>
+          </li>
+          <li>
+            <button class="navigation-choice" @click="gotoArticleRank">排行</button>
+          </li>
+        </ul>
+        <div id="search-container">
+          <input @keydown.enter="onClickSearch" v-model="searchKeyWord" type="text" placeholder="请搜索"
+                 id="search-edit">
+          <button title="搜索按钮" @click="onClickSearch" id="navigation-search-btn"></button>
+        </div>
+        <button id="publish-article" @click="onClickPublishArticle">发表文章</button>
+        <button title="好友按钮" @click="onClickFriend" id="navigation-friend-btn"></button>
+        <div class="just-decorate-for-header"></div>
       </div>
-      <button id="publish-article" @click="onClickPublishArticle">发表文章</button>
-      <button title="好友按钮" @click="onClickFriend" id="navigation-friend-btn"></button>
-      <div class="just-decorate-for-header"></div>
-    </header>
+    </div>
   </div>
-
+  <div id="navigation-margin-empty-div"></div>
 </template>
 
 <style scoped>
@@ -81,15 +88,24 @@ const onClickSearch = function () {
   font-family: "Microsoft YaHei UI", serif;
 }
 
+
+#navigation-margin-empty-div {
+  margin-bottom: 70px;
+}
+
 #navigation-bar-container {
+  position: fixed;
   top: 0;
   left: 0;
   min-width: 1500px;
+  width: 100%;
   margin-bottom: 10px;
   background-color: white;
+  z-index: 10;
 }
 
 #navigation-bar {
+  position: relative;
   width: 100%;
   height: 54px;
   top: 0;
@@ -147,6 +163,7 @@ const onClickSearch = function () {
     border-radius: 999px;
     transition: 0.05s;
     font-size: 16px;
+    cursor: pointer;
   }
 
   & #navigation-friend-btn {
