@@ -1,0 +1,24 @@
+{
+  "name": "database_front",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@kangc/v-md-editor": "^2.3.18",
+    "axios": "^1.6.2",
+    "markdown-it": "^13.0.2",
+    "vue": "^3.3.8",
+    "vue-route": "^1.5.1",
+    "vue-router": "4",
+    "vue3-cookies": "^1.0.6"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.5.0",
+    "vite": "^5.0.0"
+  }
+}
