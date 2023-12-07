@@ -1,10 +1,10 @@
 <script setup>
-import { ref, onBeforeMount } from "vue";
+import { ref, onMounted } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
-
+import CategoryCard from "./CategoryCard.vue";
 const router = useRouter();
-const categories = ref([]);
+const categories = ref(null);
 const admin = ref(false);
 const fetchCategories = async function () {
   try {
@@ -34,39 +34,31 @@ const onClickNewCategoryBtn = function () {
   router.push("/main/newCategory");
 };
 
-const onClickDeleteCategoryBtn = async function (id) {
-  try {
-    const res = await axios.post(axios.defaults.baseURL + "/api/delCategory", {
-      category_id: id,
-    });
-    if (res.data.status == 0) {
-      console.log("成功删除分类");
-      fetchCategories();
-    } else {
-      console.log(res.data.message);
-    }
-  } catch (err) {
-    console.log(err.toString());
-  }
-};
 
-onBeforeMount(() => {
+
+onMounted(() => {
   fetchAdmin();
   fetchCategories();
 });
 </script>
 
 <template>
-  <h1>Categories</h1>
-  <button v-if="admin" @click="onClickNewCategoryBtn">New Category</button>
-  <div v-for="category in categories" :key="category.id">
-    <router-link :to="'/main/category/' + category.id">
-      <h2>{{ category.name }}</h2></router-link>
+  <Transition>
+    <div v-if="categories">
+      <v-container v-if="admin" class="border boder-2 mt-4 mb-4 rounded-sm elevation-2">
+        <v-btn variant="outlined" @click="onClickNewCategoryBtn">新建板块</v-btn>
+      </v-container>
+      <v-container class="border boder-2 mt-4 mb-4 rounded-sm elevation-2">
+        <v-container  >
+          <v-row>
+            <v-col cols="12" sm="12" md="6" lg="4"   v-for="category in categories" :key="category.id">
+              <CategoryCard :category="category" :admin="admin" />
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-container>
 
-    <p>{{ category.description }}</p>
-    <p>{{ category.image }}</p>
-    <p>{{ category.created_time }}</p>
-    <button @click="onClickDeleteCategoryBtn(category.id)">删除</button>
-  </div>
+    </div>
+  </Transition>
 </template>
 <style scoped></style>

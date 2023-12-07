@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
+import {inject} from "vue";
 import SignIn from "./components/Login/SignIn.vue";
 import SignUp from "./components/Login/SignUp.vue";
 import MainPage from "./components/MainPage.vue";
@@ -9,9 +10,15 @@ import UserInfo from "./components/User/UserInfo.vue";
 import Categories from "./components/Category/Categories.vue";
 import NewCategory from "./components/Category/NewCategory.vue";
 import Category from "./components/Category/Category.vue";
+import ArticleSearch from "./components/Article/ArticleSearch.vue";
 const routes = [
   { path: "/", component: SignIn, name: "SignIn" },
-  { path: "/signUp", component: SignUp, name: "SignUp" },
+  { path: "/SignUp", component: SignUp, name: "SignUp" },
+  {
+    path: "/SignIn",
+    component: SignIn,
+    name: "SignIn",
+  },
   {
     path: "/main",
     component: MainPage,
@@ -26,6 +33,7 @@ const routes = [
         path: "article/:id",
         component: Article,
         name: "articleDetail",
+
       },
       {
         path: "newArticle",
@@ -37,6 +45,7 @@ const routes = [
         path: "user/:user_id",
         component: UserInfo,
         name: "userInfo",
+        
       },
       {
         path: "categories",
@@ -71,23 +80,28 @@ const routes = [
     ],
   },
 ];
-
 const router = createRouter({
   history: createWebHistory(),
   routes,
 });
-router.beforeEach(async (to,from)=>{
-    if (to.name === "SignIn" || to.name === "SignUp") {
-        if (localStorage.getItem("token")) {
-            return { name: "main" };
-        }
-        return true;
-    } else {
-        if (localStorage.getItem("token")) {
-            return true;
-        } else {
-            return { name: "SignIn" };
-        }
+router.beforeEach((to, from) => {
+  console.log("your god");
+  router.setLoading(true);
+  if (to.name === "SignIn" || to.name === "SignUp") {
+    if (localStorage.getItem("token")) {
+      return { name: "main" };
     }
+    return true;
+  } else {
+    if (localStorage.getItem("token")) {
+      return true;
+    } else {
+      return { name: "SignIn" };
+    }
+  }
+});
+router.afterEach(() => {
+  console.log("my love");
+  router.setLoading(false);
 });
 export default router;

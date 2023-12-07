@@ -2,13 +2,18 @@
 import { ref, onBeforeMount } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
+import UserFollowers from './UserFollowers.vue';
+import UserFollowees from './UserFollowees.vue';
+import UserArticles from './UserArticles.vue';
 const route = useRoute();
 const id = ref(route.params.user_id);
 const userInfo = ref(null);
 const avatar = ref(null);
 const cover = ref(null);
+const tab = ref(null);
 const router = useRouter();
-
+const avatarInput = ref(null);
+const coverInput = ref(null);
 const articles = ref([]);
 const followers = ref([]);
 const followees = ref([]);
@@ -108,10 +113,16 @@ const signOut = async function () {
 
 const selectCover = function (e) {
   cover.value = e.target.files[0];
+  if (cover.value) {
+    uploadCover();
+  }
 };
 
 const selectAvatar = function (e) {
   avatar.value = e.target.files[0];
+  if (avatar.value) {
+    uploadAvatar();
+  }
 };
 
 const fetchArticles = async function () {
@@ -121,7 +132,7 @@ const fetchArticles = async function () {
     );
     articles.value = res.data["data"];
   } catch (e) {
-    console.log(er.toString());
+    console.log(e.toString());
   }
 };
 
@@ -179,48 +190,99 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <div v-if="userInfo !== null">
-    <h1>User Id: {{ id }}</h1>
-    <input type="file" @change="selectCover" />
-    <button @click="uploadCover">上传封面</button>
-    <input type="file" @change="selectAvatar" />
-    <button @click="uploadAvatar">上传头像</button>
-    <button @click="signOut">退出登录</button>
-
-    <p>{{ userInfo.username }}</p>
-    <p>{{ userInfo.email }}</p>
-    <p>{{ userInfo.introduction }}</p>
-    <p>{{ userInfo.avatar }}</p>
-    <p>{{ userInfo.cover }}</p>
-    <div v-if="!userInfo.isSelf">
-      <button v-if="userInfo.is_followed === true" @click="onClickUnFollowBtn">
-        取消关注
-      </button>
-      <button v-else @click="onClickFollowBtn">关注</button>
+  <transition>
+    <div v-if="userInfo">
+      <v-container class="rounded-sm elevation-2 mt-6 pa-0 rounded-sm">
+        <v-btn class="upload-cover-btn" @click="coverInput.click()">上传封面</v-btn>
+        <v-img height="120" cover :src="axios.defaults.baseURL + userInfo.cover" />
+        <v-container class="user-baseinfo-container">
+          <v-container class="user-btns">
+            <v-btn v-if="!userInfo.isSelf && !userInfo.is_followed" @click="onClickFollowBtn">关注</v-btn>
+            <v-btn v-else-if="!userInfo.isSelf && userInfo.is_followed" @click="onClickUnFollowBtn">取消关注</v-btn>
+            <v-btn v-if="userInfo.isSelf" class="ml-3" @click="signOut">退出登录</v-btn>
+            <v-btn v-if="userInfo.isSelf" class="ml-3" @click="">修改资料</v-btn>
+          </v-container>
+          <v-avatar size="120px" class="usr-profile-avatar" @click="avatarInput.click()">
+            <v-img :src="axios.defaults.baseURL + userInfo.avatar" />
+          </v-avatar>
+          <input type="file" hidden ref="avatarInput" accept="image/*" @change="selectAvatar" />
+          <input type="file" hidden ref="coverInput" accept="image/*" @change="selectCover" />
+          <p class="profile-username">{{ userInfo.username }}</p>
+        </v-container>
+      </v-container>
+      <v-container class="border border-2 rounded-sm elevation-2 mt-6 pa-0 rounded-sm">
+        <v-container>
+          <p>电子邮箱:{{ userInfo.email }}</p>
+        </v-container>
+        <v-container>
+          <p>个人介绍:{{ userInfo.introduction }}</p>
+        </v-container>
+        <v-divider />
+        <v-tabs v-model="tab" align-tabs="center">
+          <v-tab>我的文章</v-tab>
+          <v-tab>我的关注</v-tab>
+          <v-tab>我的粉丝</v-tab>
+        </v-tabs>
+        <v-window v-model="tab">
+          <v-window-item>
+            <UserArticles :user_id="userInfo.user_id" />
+          </v-window-item>
+          <v-window-item>
+            <UserFollowees :user_id="userInfo.user_id" />
+          </v-window-item>
+          <v-window-item>
+            <UserFollowers :user_id="userInfo.user_id" />
+          </v-window-item>
+        </v-window>
+      </v-container>
     </div>
-    <h2>My articles</h2>
-    <div v-for="article in articles" :key="article.id">
-      <router-link :to="'/main/article/' + article.id">
-        <h2>{{ article.title }}</h2>
-      </router-link>
-    </div>
-    <h2>My followers</h2>
-    <div v-for="follower in followers" :key="follower.id">
-      <router-link :to="'/main/user/' + follower.id">
-        <h2>{{ follower.username }}</h2>
-      </router-link>
-    </div>
-    <h2>My followings</h2>
-    <div v-for="followee in followees" :key="followee.id">
-      <router-link :to="'/main/user/' + followee.id">
-        <h2>{{ followee.username }}</h2>
-      </router-link>
-    </div>
-  </div>
-  <div v-else>
-    <h1>User Id: {{ id }}</h1>
-    <p>暂无该用户</p>
-  </div>
+  </transition>
 </template>
 
-<style scoped></style>
+<style scoped>
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.user-btns {
+  position: absolute;
+  z-index: 10;
+  width: fit-content;
+  right: 5%;
+}
+
+.upload-cover-btn {
+  position: absolute;
+  z-index: 10;
+  background-color: transparent;
+  right: 5%;
+  top: 4%;
+  border-width: 1px;
+}
+
+.user-baseinfo-container {
+  min-height: 100px;
+}
+
+.profile-username {
+  margin-left: 150px;
+  font-size: 24px;
+  padding: 0;
+}
+
+.usr-profile-avatar {
+  position: absolute;
+  top: 70px;
+  border: 1px solid #a59c9c;
+
+  & :hover {
+    animation: rotate 1s ease-in-out;
+  }
+}
+</style>
