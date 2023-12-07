@@ -70,13 +70,12 @@ onMounted(() => {
     <v-container v-if="videos">
         <p class="text-grey">点击视频复制视频链接哦</p>
         <v-file-input     prepend-icon="mdi-paperclip" class="pa-0" @change="onvideoselected"  label="上传视频"></v-file-input>
-        <p>{{ videos }}</p>
         <v-container class="user-video-container">
             <v-row>
                 <v-col cols="12" sm="6" md="4" lg="3" v-for="item in slicedvideos">
-
-                    <v-img @click="copyLink(axios.defaults.baseURL + item.preview)"
-                        :src="axios.defaults.baseURL + item.video" />
+                    
+                    <v-img @click="copyLink(axios.defaults.baseURL + item.video)"
+                        :src="axios.defaults.baseURL + item.preview" />
                 </v-col>
             </v-row>
             <v-pagination :length="pages" v-model="page" />

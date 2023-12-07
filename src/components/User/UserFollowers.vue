@@ -1,9 +1,10 @@
 <script setup>
 import axios from 'axios';
-import { useRoute } from 'vue-router';
-import { ref, computed, onMounted } from 'vue';
+import { useRoute,useRouter } from 'vue-router';
+import { ref, computed, onMounted,watch } from 'vue';
 const followers = ref(null);
 const route = useRoute();
+const router = useRouter();
 const props = defineProps({
     user_id: {
         required: true
@@ -36,6 +37,9 @@ const slicedFollowers = computed(() => {
 onMounted(() => {
     fetchFollowers();
 })
+watch (()=>route.params.user_id,()=>{
+    fetchFollowers();
+});
 
 const onClickFollowBtn = async function (id) {
   try {
@@ -53,6 +57,10 @@ const onClickFollowBtn = async function (id) {
     console.log(err.toString());
   }
 };
+const goToUserProfile = function(id) {
+    console.log(id);
+    router.push("/main/user/" + id);
+}
 
 </script>
 
@@ -61,7 +69,7 @@ const onClickFollowBtn = async function (id) {
         <v-row>
             <v-col cols="12" sm="6" md="4" lg="3" v-for="follower in slicedFollowers" :key="follower.id">
                 <v-card>
-                    <v-card-title>{{ follower.username }}</v-card-title>
+                    <v-card-title @click="goToUserProfile(follower.id)" class="cursor-pointer">{{ follower.username }}</v-card-title>
                     <v-card-subtitle>{{ follower.email }}</v-card-subtitle>
                     <v-card-actions>
                         <v-btn @click="onClickFollowBtn(follower.id)">关注</v-btn>

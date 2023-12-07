@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onBeforeMount } from "vue";
+import { ref, onBeforeMount, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import UserFollowers from './UserFollowers.vue';
@@ -14,39 +14,14 @@ const tab = ref(null);
 const router = useRouter();
 const avatarInput = ref(null);
 const coverInput = ref(null);
-const articles = ref([]);
-const followers = ref([]);
-const followees = ref([]);
-const fetchFollowers = async function () {
-  try {
-    const res = await axios.get(
-      axios.defaults.baseURL + "/api/user/" + id.value + "/followers"
-    );
-    if (res.data.status == 0) {
-      followers.value = res.data["data"];
-    } else {
-      console.log(res.data.message);
-    }
-  } catch (err) {
-    console.log(err.toString());
-  }
-};
+const dialog = ref(false);
+const changedEmail= ref('');
+const changedIntroduction = ref('');
+const changeForm = ref(null);
 
-const fetchFollowees = async function () {
-  try {
-    const res = await axios.get(
-      axios.defaults.baseURL + "/api/user/" + id.value + "/followees"
-    );
-    if (res.data.status == 0) {
-      followees.value = res.data["data"];
-    } else {
-      console.log(res.data.message);
-    }
-  } catch (err) {
-    console.log(err.toString());
-  }
-};
-
+watch(() => route.params.user_id, (newUserId) => {
+  id.value = newUserId;
+});
 const onClickFollowBtn = async function () {
   try {
     const res = await axios.post(axios.defaults.baseURL + "/api/follow", {
@@ -55,7 +30,6 @@ const onClickFollowBtn = async function () {
     if (res.data.status == 0) {
       console.log("关注成功");
       fetchUserInfo();
-      fetchFollowees();
     } else {
       console.log(res.data.message);
     }
@@ -72,7 +46,6 @@ const onClickUnFollowBtn = async function () {
     if (res.data.status == 0) {
       console.log("取消关注成功");
       fetchUserInfo();
-      fetchFollowees();
     } else {
       console.log(res.data.message);
     }
@@ -125,16 +98,11 @@ const selectAvatar = function (e) {
   }
 };
 
-const fetchArticles = async function () {
-  try {
-    const res = await axios.get(
-      axios.defaults.baseURL + "/api/user/" + id.value + "/articles"
-    );
-    articles.value = res.data["data"];
-  } catch (e) {
-    console.log(e.toString());
-  }
-};
+
+watch(id, () => {
+  fetchUserInfo();
+})
+
 
 const uploadCover = async function () {
   try {
@@ -180,19 +148,58 @@ const uploadAvatar = async function () {
   }
 };
 
+const openChangeUser = function() {
+  dialog = true;
+  changedEmail = userInfo.email;
+  changedIntroduction = userInfo.introduction;
+}
+
+const changedEmailRules = [
+  v => !!v || "电子邮箱不能为空",
+  v => /.+@.+\..+/.test(v) || "请输入正确的电子邮箱",
+];
+const changedIntroductionRules = [
+  v => !!v || "个人描述不能为空",
+  v => v.length <= 200 || '个人介绍不能超过200字符'
+];
+
+const onClickChangeUserBtn = async function() {
+  const isValid = await changeForm.value.validate();
+  if (!isValid.valid) {
+    return;
+  }
+  try{
+    const res = await axios.post(axios.defaults.baseURL + '/api/changeUserInfo',{
+      email:changedEmail.value,
+      introduction: changedIntroduction.value
+    });
+    if (res.data.status === 0) {
+      fetchUserInfo();
+      dialog.value = false;
+    } else {
+      console.log(res.data.message);
+    }
+  } catch(err) {
+    console.log(err.toString());
+  };
+}
+
+const onClickBackUserBtn = function() {
+  dialog = false;
+}
+
 onBeforeMount(() => {
   //   id.value = route.params.user_id;
   fetchUserInfo();
-  fetchArticles();
-  fetchFollowers();
-  fetchFollowees();
+
 });
+
 </script>
 
 <template>
   <transition>
     <div v-if="userInfo">
-      <v-container class="rounded-sm elevation-2 mt-6 pa-0 rounded-sm">
+      <v-container class="position-relative rounded-sm elevation-2 mt-6 pa-0 rounded-sm">
         <v-btn class="upload-cover-btn" @click="coverInput.click()">上传封面</v-btn>
         <v-img height="120" cover :src="axios.defaults.baseURL + userInfo.cover" />
         <v-container class="user-baseinfo-container">
@@ -200,7 +207,7 @@ onBeforeMount(() => {
             <v-btn v-if="!userInfo.isSelf && !userInfo.is_followed" @click="onClickFollowBtn">关注</v-btn>
             <v-btn v-else-if="!userInfo.isSelf && userInfo.is_followed" @click="onClickUnFollowBtn">取消关注</v-btn>
             <v-btn v-if="userInfo.isSelf" class="ml-3" @click="signOut">退出登录</v-btn>
-            <v-btn v-if="userInfo.isSelf" class="ml-3" @click="">修改资料</v-btn>
+            <v-btn v-if="userInfo.isSelf" class="ml-3" @click="dialog = true">修改资料</v-btn>
           </v-container>
           <v-avatar size="120px" class="usr-profile-avatar" @click="avatarInput.click()">
             <v-img :src="axios.defaults.baseURL + userInfo.avatar" />
@@ -225,16 +232,29 @@ onBeforeMount(() => {
         </v-tabs>
         <v-window v-model="tab">
           <v-window-item>
-            <UserArticles :user_id="userInfo.user_id" />
+            <UserArticles :user_id="userInfo.user_id" :key="userInfo.user_id" />
           </v-window-item>
           <v-window-item>
-            <UserFollowees :user_id="userInfo.user_id" />
+            <UserFollowees :user_id="userInfo.user_id" :key="userInfo.user_id" />
           </v-window-item>
           <v-window-item>
-            <UserFollowers :user_id="userInfo.user_id" />
+            <UserFollowers :user_id="userInfo.user_id" :key="userInfo.user_id" />
           </v-window-item>
         </v-window>
       </v-container>
+      <v-dialog v-model="dialog" width="50%">
+        <v-card>
+          <v-container>
+            <v-form ref="changeForm" @submit.prevent="onClickChangeUserBtn">
+              <v-text-field label="电子邮箱"  :placeholder="userInfo.email" :rules="changedEmailRules" v-model="changedEmail" />
+              <v-textarea label="个人介绍" :placeholder="userInfo.introduction" :rules="changedIntroductionRules" v-model="changedIntroduction" />
+              <v-btn class="mr-2" type="submit">确认修改</v-btn>
+              <v-btn variant="plain" @click="dialog = false">返回</v-btn>
+            </v-form>
+          </v-container>
+
+        </v-card>
+      </v-dialog>
     </div>
   </transition>
 </template>
@@ -262,7 +282,7 @@ onBeforeMount(() => {
   z-index: 10;
   background-color: transparent;
   right: 5%;
-  top: 4%;
+  top: 10%;
   border-width: 1px;
 }
 

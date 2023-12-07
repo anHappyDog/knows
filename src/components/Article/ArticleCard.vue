@@ -1,4 +1,5 @@
 <script setup>
+import {watch,ref} from 'vue';
 import { useRouter,useRoute } from 'vue-router';
 import axios from 'axios';
 const route = useRoute();
@@ -9,6 +10,11 @@ const props = defineProps({
         required: true
     }
 });
+// const article = ref(route.params.article);
+// watch(()=>route.params.article,()=>{
+//     console.log(route.params.article);
+//     article.value = route.params.article;
+// });
 const onClickUserAvatar = function (id) {
     router.push('/main/user/' + id);
 }
@@ -18,10 +24,10 @@ const onClickUserAvatar = function (id) {
     <v-card class="article-card">
         <v-card-title> {{ article.title }}</v-card-title>
         <v-container class="article-author-container">
-            <v-avatar color="surface-variant" @click="onClickUserAvatar(article.id)" class="user-avatar">
+            <v-avatar color="surface-variant" @click="onClickUserAvatar(article.author_id)" class="user-avatar">
                 <v-img :src="axios.defaults.baseURL + article.author_avatar" />
             </v-avatar>
-            <v-btn variant="plain" @click="onClickUserAvatar(article.id)">{{ article.author }}</v-btn>
+            <v-btn variant="plain" @click="onClickUserAvatar(article.author_id)">{{ article.author }}</v-btn>
         </v-container>
         <v-container>
             <p>所属板块:{{ article.category }}</p>

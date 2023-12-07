@@ -1,13 +1,16 @@
 <script setup>
 import ArticleCard from '../Article/ArticleCard.vue';
 import axios from 'axios';
-import { ref, computed,onMounted } from 'vue';
+import { ref, computed,onMounted,watch } from 'vue';
 import { useRoute } from 'vue-router';
 const route = useRoute();
 const props = defineProps({
     user_id : {
         required: true
     }
+});
+watch (()=>route.params.user_id,()=>{
+    fetchArticles();
 });
 const articles = ref(null);
 const page = ref(1);
@@ -16,6 +19,7 @@ const pages = computed(()=>{return articles.value?Math.ceil(articles.value.lengt
 onMounted(() => {
     console.log("user article is mounted");
     fetchArticles();
+
 })
 
 const fetchArticles = async function () {
@@ -24,6 +28,7 @@ const fetchArticles = async function () {
             axios.defaults.baseURL + "/api/user/" + route.params.user_id + "/articles"
         );
         articles.value = res.data["data"];
+        console.log(articles.value);
     } catch (e) {
         console.log(e.toString());
     }

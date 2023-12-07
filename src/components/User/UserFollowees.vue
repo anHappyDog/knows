@@ -1,13 +1,17 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { ref, computed, onMounted,watch} from 'vue';
+import { useRoute,useRouter } from 'vue-router';
 import axios from 'axios';
 const route = useRoute();
+const router = useRouter();
 const props = defineProps({
     user_id: {
         required: true
     }
-})
+});
+watch (()=>route.params.user_id,()=>{
+    fetchFollowees();
+});
 const followees = ref(null);
 const page = ref(1);
 const sizePerPage = 12;
@@ -32,24 +36,28 @@ onMounted(() => {
     fetchFollowees();
 });
 const onClickUnFollowBtn = async function (id) {
-  try {
-    const res = await axios.post(axios.defaults.baseURL + "/api/unfollow", {
-      user_id: id,
-    });
-    if (res.data.status == 0) {
-      console.log("取消关注成功");
-      fetchUserInfo();
-      fetchFollowees();
-    } else {
-      console.log(res.data.message);
+    try {
+        const res = await axios.post(axios.defaults.baseURL + "/api/unfollow", {
+            user_id: id,
+        });
+        if (res.data.status == 0) {
+            console.log("取消关注成功");
+            fetchUserInfo();
+            fetchFollowees();
+        } else {
+            console.log(res.data.message);
+        }
+    } catch (err) {
+        console.log(err.toString());
     }
-  } catch (err) {
-    console.log(err.toString());
-  }
 };
 const slicedFollowees = computed(() => {
     return followees.value != null ? followees.value.slice((page.value - 1) * sizePerPage, page.value * sizePerPage) : [];
 });
+
+const goToUserProfile = function(id) {
+    router.push("/main/user/" + id);
+}
 
 </script>
 
@@ -58,17 +66,18 @@ const slicedFollowees = computed(() => {
         <v-row>
             <v-col cols="12" sm="6" md="4" lg="3" v-for="followee in slicedFollowees" :key="followee.id">
                 <v-card>
-                    <v-card-title>{{ followee.username }}</v-card-title>
+                    <v-card-title @click="goToUserProfile(followee.id)" class="cursor-pointer">{{ followee.username }}</v-card-title>
                     <v-card-subtitle>{{ followee.email }}</v-card-subtitle>
                     <v-card-actions>
                         <v-btn @click="onClickUnFollowBtn(followee.id)">取消关注</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-col>
+            <v-container v-if="followees.length === 0" class="d-flex align-center justify-center">
+                <p>暂无关注</p>
+            </v-container>
         </v-row>
-        <v-container v-if="followees.length === 0" class="d-flex align-center justify-center">
-            <p>暂无关注</p>
-        </v-container>
+
         <v-pagination :length="pages" v-model="page" />
     </v-container>
 </template>
