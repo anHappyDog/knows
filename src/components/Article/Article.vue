@@ -1,8 +1,9 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount,computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import alertStore from '../../alertStore';
 import axios from "axios";
-
+const methods = alertStore.methods;
 const router = useRouter();
 const route = useRoute();
 const id = ref(route.params.id);
@@ -35,12 +36,20 @@ const getArticle = async function () {
       liked.value = res.data.data.liked;
       likes.value = res.data.data.likes;
       isAuthor.value = res.data.data.isAuthor;
-      console.log(articleInfo.value.cover);
     } else {
-      console.log(res.data.message);
+      methods.addAlert({
+        type: "error",
+        message: res.data.message,
+        timeout: 3000
+      });
+    
     }
   } catch (err) {
-    console.log(err.toString());
+    methods.addAlert({
+        type: "error",
+        message: err.toString(),
+        timeout: 3000
+      });
   }
 };
 
@@ -50,14 +59,27 @@ const onClickLikeBtn = async function () {
       article_id: id.value,
     });
     if (res.data.status === 0) {
-      console.log("点赞成功");
+      methods.addAlert({
+        type:"success",
+        message:"点赞成功",
+        timeout: 3000
+      });
       fetchLikes();
       liked.value = true;
     } else {
-      console.log(res.data.message);
+      methods.addAlert({
+        type: "error",
+        message: res.data.message,
+        timeout: 3000
+      });
+    
     }
   } catch (err) {
-    console.log(err.toString());
+    methods.addAlert({
+        type: "error",
+        message: err.toString(),
+        timeout: 3000
+      });
   }
 };
 
@@ -67,14 +89,26 @@ const onClickUnLikeBtn = async function () {
       article_id: id.value,
     });
     if (res.data.status === 0) {
-      console.log("点赞取消成功");
+      methods.addAlert({
+        type:"success",
+        message:"点赞取消成功",
+        timeout: 3000
+      });
       fetchLikes();
       liked.value = false;
     } else {
-      console.log(res.data.message);
+      methods.addAlert({
+        type: "error",
+        message: res.data.message,
+        timeout: 3000
+      });
     }
   } catch (err) {
-    console.log(err.toString());
+    methods.addAlert({
+        type: "error",
+        message: err.toString(),
+        timeout: 3000
+      });
   }
 };
 const fetchLikes = async function () {
@@ -87,10 +121,18 @@ const fetchLikes = async function () {
     if (res.data.status === 0) {
       likes.value = res.data.likes;
     } else {
-      console.log(res.data.message);
+      methods.addAlert({
+        type: "error",
+        message: res.data.message,
+        timeout: 3000
+      });
     }
   } catch (err) {
-    console.log(err.toString());
+    methods.addAlert({
+        type: "error",
+        message: err.toString(),
+        timeout: 3000
+      });
   }
 };
 
@@ -106,7 +148,11 @@ const onClickCommentBackBtn = function () {
 const onClickCommentReleaseBtn = async function () {
   const isValid = await commentForm.value.validate();
   if (!isValid.valid) {
-    console.log("请检查您的输入");
+    methods.addAlert({
+        type: "warning",
+        message: "请检查你的输入",
+        timeout: 3000
+      });
     return;
   }
   try {
@@ -115,30 +161,55 @@ const onClickCommentReleaseBtn = async function () {
       content: commentContent.value,
     });
     if (res.data.status === 0) {
-      console.log("评论成功");
+      methods.addAlert({
+        type: "success",
+        message: "评论成功",
+        timeout: 3000
+      });
       onClickCommentBackBtn();
       fetchComments();
     } else {
-      console.log(res.data.message);
+      methods.addAlert({
+        type: "error",
+        message: res.data.message,
+        timeout: 3000
+      });
     }
   } catch (err) {
-    console.log(err.toString());
+    methods.addAlert({
+        type: "error",
+        message: err.toString(),
+        timeout: 3000
+      });
   }
 };
 
 const onClickDeleteCommentBtn = async function (comment_id) {
   try {
+    console.log(comment_id);
     const res = await axios.post(axios.defaults.baseURL + "/api/delComment", {
       comment_id: comment_id,
     });
     if (res.data.status === 0) {
-      console.log("删除评论成功");
+      methods.addAlert({
+        type: "success",
+        message: "删除评论成功",
+        timeout: 3000
+      });
       fetchComments();
     } else {
-      console.log(res.data.message);
+      methods.addAlert({
+        type: "error",
+        message: res.data.message,
+        timeout: 3000
+      });
     }
   } catch (err) {
-    console.log(err.toString());
+    methods.addAlert({
+        type: "error",
+        message: err.toString(),
+        timeout: 3000
+      });
   }
 };
 
@@ -152,21 +223,44 @@ const fetchComments = async function () {
     if (res.data.status === 0) {
       comments.value = res.data.data;
     } else {
-      console.log(res.data.message);
+      methods.addAlert({
+        type: "error",
+        message: res.data.message,
+        timeout: 3000
+      });
     }
   } catch (err) {
-    console.log(err.toString());
+    methods.addAlert({
+        type: "error",
+        message: err.toString(),
+        timeout: 3000
+      });
   }
 };
 
 const onClickDeleteArticleBtn = async function () {
-
+  try{
+    const res = await axios.post(axios.defaults.baseURL + "/api/deleteArticle", {
+      article_id: id.value,
+    });
+    methods.addAlert({
+        type: "success",
+        message: "删除文章成功",
+        timeout: 3000
+      });
+    router.push("/main/articles");
+  } catch(err) {
+    methods.addAlert({
+        type: "error",
+        message: err.toString(),
+        timeout: 3000
+      });
+  }
 };
 const goToCategory = function (id) {
   router.push("/main/category/" + id);
 };
 const goToUserProfile = function (id) {
-  console.log(id);
   router.push("/main/user/" + id);
 };
 
@@ -175,13 +269,16 @@ const commentRules = [
   (v) => (v && v.length <= 100) || "评论不能超过100个字符",
 ];
 
+const onClickUpdateBtn = function () {
+  router.push("/main/article/" + id.value + "/update");
+};
+
 onMounted(() => {
   getArticle();
   fetchLikes();
   fetchComments();
 });
 onBeforeUnmount(() => {
-  console.log("Article is unmounted");
 });
 </script>
 
@@ -219,7 +316,8 @@ onBeforeUnmount(() => {
             <v-btn elevated v-else @click="onClickUnLikeBtn">取消点赞</v-btn>
           </v-badge>
           <v-btn class="mr-10" @click="onClickCommentBtn">评论</v-btn>
-          <v-btn @click="onClickDeleteArticleBtn">删除文章</v-btn>
+          <v-btn v-if="isAuthor" @click="onClickDeleteArticleBtn">删除文章</v-btn>
+          <v-btn @click="onClickUpdateBtn" v-if="isAuthor" class="ml-4">修改文章</v-btn>
         </v-container>
       </v-container>
 
@@ -252,7 +350,7 @@ onBeforeUnmount(() => {
           <v-container class="cmt-container d-flex flex-row align-center">
             <p>发布时间：{{ comment.created_time }}</p>
             <v-spacer />
-            <v-btn v-if="comment.canDelete"  @click="onClickDeleteCommentBtn" class="mr-4">删除</v-btn>
+            <v-btn v-if="comment.canDelete"  @click="onClickDeleteCommentBtn(comment.id)" class="mr-4">删除</v-btn>
           </v-container>
         </v-container>
         <v-pagination v-model="commentPage" :length="pages" />

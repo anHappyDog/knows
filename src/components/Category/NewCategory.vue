@@ -2,6 +2,8 @@
 import axios from "axios";
 import { ref } from "vue";
 import { useRouter } from 'vue-router';
+import alertStore from "../../alertStore";
+const methods = alertStore.methods;
 const image = ref(null);
 const name = ref("");
 const description = ref("");
@@ -10,14 +12,14 @@ const form = ref(null);
 const onClickCreateBtn = async function () {
     const isValid = await form.value.validate();
     if (!isValid.valid) {
-        console.log("请先检查您的输入");
+        methods.addAlert({
+            type: "error",
+            message: "请先检查您的输入",
+            timeout: 3000
+        });
         return;
     }
     try {
-        if (name === "" || description === "") {
-            console.log("板块名称或者板块描述不能为空");
-            return;
-        }
         const formData = new FormData();
         formData.append('image', image.value);
         formData.append('name', name.value);
@@ -25,12 +27,24 @@ const onClickCreateBtn = async function () {
         const res = await axios.post(axios.defaults.baseURL + "/api/newCategory", formData);
         if (res.data.status == 0) {
             router.push('/main/categories');
-            console.log("创建板块成功");
+            methods.addAlert({
+                type: "success",
+                message: "创建板块成功",
+                timeout: 3000
+            });
         } else {
-            console.log(res.data.message);
+            methods.addAlert({
+                type: "error",
+                message: res.data.message,
+                timeout: 3000
+            });
         }
     } catch (err) {
-        console.log(err.toString());
+        methods.addAlert({
+            type: "error",
+            message: err.toString(),
+            timeout: 3000
+        });
     }
 };
 const onClickBackBtn = async function () {
@@ -62,11 +76,12 @@ const descriptionRules = [
             <h2 class="color-primary ">创建板块</h2>
             <v-sheet width="300" class="mt-10 ">
                 <v-form ref="form" @submit.prevent="onClickCreateBtn">
-                    <v-file-input prepend-icon="mdi-paperclip" accept="image/*" label="板块头像" @change="setImage" :rules="avatarRules" />
-                    <v-text-field label="板块名称" v-model="name" :rules="nameRules"/>
+                    <v-file-input prepend-icon="mdi-paperclip" accept="image/*" label="板块头像" @change="setImage"
+                        :rules="avatarRules" />
+                    <v-text-field label="板块名称" v-model="name" :rules="nameRules" />
                     <v-textarea label="板块描述" v-model="description" :rules="descriptionRules" />
                     <v-container class="d-flex flex-row align-center justify-center">
-                        <v-btn  type="submit" class="mr-4 for-new-category-btn">创建</v-btn>
+                        <v-btn type="submit" class="mr-4 for-new-category-btn">创建</v-btn>
                         <v-btn variant="plain" @click="onClickBackBtn" class="for-new-category-btn">返回</v-btn>
                     </v-container>
                 </v-form>

@@ -2,6 +2,8 @@
 import axios from 'axios';
 import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
+import alertStore from "../../alertStore";
+const methods = alertStore.methods;
 const route = useRoute();
 const images = ref(null);
 const page = ref(1);
@@ -9,8 +11,17 @@ const image = ref(null);
 const copyLink = async function (text) {
     try {
         await navigator.clipboard.writeText(text);
+        methods.addAlert({
+            type:"success",
+            message:"复制成功",
+            timeout:3000
+        });
     } catch (err) {
-        console.log(err.toString());
+        methods.addAlert({
+            type: "error",
+            message: err.toString(),
+            timeout: 3000
+        });
     }
 }
 
@@ -29,10 +40,18 @@ const fetchUserImages = async function () {
 
             images.value = res.data.data;
         } else {
-            console.log(res.data.message);
+            methods.addAlert({
+                type: "error",
+                message: res.data.message,
+                timeout: 3000
+            });
         }
     } catch (err) {
-        console.log(err.toString());
+        methods.addAlert({
+            type: "error",
+            message: err.toString(),
+            timeout: 3000
+        });
     }
 }
 const onImageSelected = function (e) {
@@ -41,7 +60,6 @@ const onImageSelected = function (e) {
 };
 const uploadImage = async function () {
     try {
-        console.log(image.value);
         const formData = new FormData();
         formData.append('image', image.value);
         const res = await axios.post(axios.defaults.baseURL + '/api/uploadUserImage', formData, {
@@ -50,13 +68,25 @@ const uploadImage = async function () {
             }
         });
         if (res.data.status === 0) {
-            console.log('上传成功');
+            methods.addAlert({
+                type: "success",
+                message: "上传成功",
+                timeout: 3000
+            });
             fetchUserImages();
         } else {
-            console.log(res.data.message);
+            methods.addAlert({
+                type: "error",
+                message: res.data.message,
+                timeout: 3000
+            });
         }
     } catch (err) {
-        console.log(err.toString());
+        methods.addAlert({
+            type: "error",
+            message: err.toString(),
+            timeout: 3000
+        });
     }
 }
 onMounted(() => {
@@ -68,7 +98,8 @@ onMounted(() => {
 <template>
     <v-container v-if="images">
         <p class="text-grey">点击图片复制图片链接哦</p>
-        <v-file-input     prepend-icon="mdi-paperclip" class="pa-0" @change="onImageSelected" accept="image/*" label="上传图片"></v-file-input>
+        <v-file-input prepend-icon="mdi-paperclip" class="pa-0" @change="onImageSelected" accept="image/*"
+            label="上传图片"></v-file-input>
 
         <v-container class="user-image-container">
             <v-row>
@@ -84,6 +115,4 @@ onMounted(() => {
     </v-container>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

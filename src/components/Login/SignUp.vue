@@ -2,6 +2,9 @@
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
 import axios from 'axios';
+import alertStore from '../../alertStore';
+import Alert from '../Alert.vue';
+const methods = alertStore.methods;
 const router = useRouter();
 const username = ref('');
 const email = ref('');
@@ -30,7 +33,11 @@ const showSuccessMessage = function (msg) {
 const onClickSignUpBtn = async function () {
     const isValid = await form.value.validate();
     if (!isValid.valid) {
-        showErrorMessage("请先检查您的输入");
+        methods.addAlert({
+            type: "error",
+            message: "请先检查您的输入",
+            timeout: 3000
+        })
         return;
     }
     loading.value = true;
@@ -42,14 +49,27 @@ const onClickSignUpBtn = async function () {
         });
         if (response.data.status == 0) {
             loading.value = false;
-            showSuccessMessage("注册成功,请前往登录界面登录!");
+            methods.addAlert({
+                type: "success",
+                message: "注册成功,请在登录界面登录!",
+                timeout: 3000
+            });
+            router.push("/SignIn");
         } else {
             loading.value = false;
-            showErrorMessage(response.data.message);
+            methods.addAlert({
+                type: "error",
+                message: response.data.message,
+                timeout: 3000
+            });
         }
     } catch (err) {
         loading.value = false;
-        showErrorMessage(err.toString());
+        methods.addAlert({
+            type: "err",
+            message: err.toString(),
+            timeout: 3000
+        });
     }
 }
 
@@ -82,6 +102,7 @@ const passwordConfirmRules = [
 
 <template>
     <v-container>
+        <Alert />
         <v-container id="signup-container">
             <h1>Sign Up</h1><br />
             <v-sheet width="300px" class="mx-auto" id="signup-form">
@@ -89,7 +110,7 @@ const passwordConfirmRules = [
                     <v-text-field type="text" v-model="username" label="用户名" :rules="usernameRules" />
                     <v-text-field type="text" v-model="email" label="电子邮箱" :rules="emailRules" />
                     <v-text-field type="password" v-model="password" label="密码" :rules="passwordRules" />
-                    <v-text-field type="passowrd" v-model="passwordConfirm" label="确认密码" :rules="passwordConfirmRules" />
+                    <v-text-field type="password" v-model="passwordConfirm" label="确认密码" :rules="passwordConfirmRules" />
                     <v-btn :loading="loading" type="submit" block class="mt-2">注册</v-btn>
                 </v-form>
                 <v-container display="flex">
@@ -115,6 +136,7 @@ const passwordConfirmRules = [
     left: 40%;
     font-size: medium;
 }
+
 #signup-form {
     margin-bottom: 10px;
 

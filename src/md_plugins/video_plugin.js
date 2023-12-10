@@ -44,7 +44,7 @@ export default function createVideoPlugin() {
           md.renderer.rules.video = function(tokens, idx) {
             const token = tokens[idx];
             const src = md.utils.escapeHtml(token.attrs[0][1]);
-            return `<video controls src="${src}">Your browser does not support the video tag.</video>`;
+            return `<video class="vmd-video" controls src="${src}">Your browser does not support the video tag.</video>`;
           };
         });
       }

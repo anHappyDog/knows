@@ -3,6 +3,9 @@ import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import Feedback from '../Feedback/Feedback.vue';
+import alertStore from "../../alertStore";
+import Alert from '../Alert.vue';
+const methods = alertStore.methods;
 const username = ref('');
 const password = ref('');
 const router = useRouter();
@@ -27,7 +30,11 @@ const onClickSignInBtn = async function () {
     const isValid = await form.value.validate();
 
     if (!isValid.valid) {
-        showErrorMessage("请先检查您的输入");
+        methods.addAlert({
+            type:"error",
+            message: "请先检查您的输入",
+            timeout: 3000
+        })
         return;
     }
     logining.value = true;
@@ -39,16 +46,28 @@ const onClickSignInBtn = async function () {
         if (res.data.status == 0) {
             localStorage.setItem('token', res.data.token);
             logining.value = false;
+            methods.addAlert({
+                type:"success",
+                message: "登录成功",
+                timeout: 3000
+            });
             router.push('/main/articles');
 
         } else {
             logining.value = false;
-            showErrorMessage(res.data.message);
-
+            methods.addAlert({
+            type:"error",
+            message: res.data.message,
+            timeout: 3000
+        })
         }
     } catch (err) {
         logining.value = false;
-        showErrorMessage(err.toString());
+        methods.addAlert({
+            type:"error",
+            message: err.toString(),
+            timeout: 3000
+        })
 
     }
 };
@@ -74,6 +93,7 @@ const passwordRules = [
 
 <template>
     <v-container>
+        <Alert />
         <v-container id="login-container">
             <h1>Sign In</h1>
             <br />
@@ -114,12 +134,6 @@ const passwordRules = [
     width: 50%;
 }
 
-.log-msg {
-    position: absolute;
-    top: 4%;
-    right: 4%;
-    width: 20%;
-}
 
 
 #go-sign-up-btn {

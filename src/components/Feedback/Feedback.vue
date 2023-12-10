@@ -2,6 +2,8 @@
 import { ref, onMounted, watch, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
+import alertStore from "../../alertStore";
+const methods = alertStore.methods;
 const route = useRoute();
 const router = useRouter();
 const feedback_id = ref(route.params.feedback_id);
@@ -19,7 +21,7 @@ const slicedPosts = computed(() => {
     return feedbackPosts.value ? feedbackPosts.value.slice((page.value - 1) * sizePerPage, page.value * sizePerPage) : [];
 });
 const admin = ref(false);
-const goToUserProfile = function(id) {
+const goToUserProfile = function (id) {
     router.push(`/main/user/${id}`);
 }
 const fetchFeedback = async function () {
@@ -28,12 +30,19 @@ const fetchFeedback = async function () {
         if (res.data.status == 0) {
             feedback.value = res.data.data;
             admin.value = res.data.admin;
-            console.log(res.data.data);
         } else {
-            console.log(res.data.message);
+            methods.addAlert({
+                type: "error",
+                message: res.data.message,
+                timeout: 3000
+            });
         }
     } catch (err) {
-        console.log(err.toString());
+        methods.addAlert({
+            type: "error",
+            message: err.toString(),
+            timeout: 3000
+        });
     }
 };
 
@@ -43,10 +52,18 @@ const fetchFeedbackPosts = async function () {
         if (res.data.status === 0) {
             feedbackPosts.value = res.data.data;
         } else {
-            console.log(res.data.message);
+            methods.addAlert({
+                type: "error",
+                message: res.data.message,
+                timeout: 3000
+            });
         }
     } catch (err) {
-        console.log(err.toString());
+        methods.addAlert({
+            type: "error",
+            message: err.toString(),
+            timeout: 3000
+        });
     }
 }
 
@@ -59,23 +76,36 @@ onMounted(() => {
     fetchFeedbackPosts();
 });
 
-const newPost = async function() {
+const newPost = async function () {
     const isValid = await form.value.validate();
     if (!isValid.valid) {
         return;
     }
     try {
-        const res = await axios.post(axios.defaults.baseURL + `/api/feedback/${feedback_id.value}/test`,{
+        const res = await axios.post(axios.defaults.baseURL + `/api/feedback/${feedback_id.value}/test`, {
             content: answer.value
         });
         if (res.data.status === 0) {
             isAnswer.value = false;
             fetchFeedbackPosts();
+            methods.addAlert({
+                type: "success",
+                message: "回复成功",
+                timeout: 3000
+            });
         } else {
-            console.log(res.data.status);
+            methods.addAlert({
+                type: "error",
+                message: res.data.message,
+                timeout: 3000
+            });
         }
-    } catch(err) {
-        console.log(err.toString());
+    } catch (err) {
+        methods.addAlert({
+            type: "error",
+            message: err.toString(),
+            timeout: 3000
+        });
     }
 }
 

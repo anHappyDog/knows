@@ -1,34 +1,48 @@
 <script setup>
 import axios from 'axios';
 import { useRouter } from 'vue-router';
+import alertStore from "../../alertStore";
+const methods = alertStore.methods;
 defineProps({
     category: {
         type: Object,
         required: true,
     },
-    admin: {
+    admin : {
         type: Boolean,
         required: true,
     }
 });
-
 const router = useRouter();
 const goToCategory = function (id) {
     router.push(`/main/category/${id}`);
 }
+
 const onClickDeleteCategoryBtn = async function (id) {
     try {
         const res = await axios.post(axios.defaults.baseURL + "/api/delCategory", {
             category_id: id,
         });
         if (res.data.status == 0) {
-            console.log("成功删除分类");
+            methods.addAlert({
+                type: "success",
+                message: "删除成功",
+                timeout: 3000
+            });
             fetchCategories();
         } else {
-            console.log(res.data.message);
+            methods.addAlert({
+                type: "error",
+                message: res.data.message,
+                timeout: 3000
+            });
         }
     } catch (err) {
-        console.log(err.toString());
+        methods.addAlert({
+            type: "error",
+            message: err.toString(),
+            timeout: 3000
+        });
     }
 };
 </script>
@@ -48,7 +62,7 @@ const onClickDeleteCategoryBtn = async function (id) {
             <p class="mt-2">{{ category.description }}</p>
         </v-container>
         <p class="text-grey">{{ category.created_time }}</p>
-        <v-btn class="position-absolute del-btn-ctr" @click="onClickDeleteCategoryBtn(category.id)">删除</v-btn>
+        <v-btn v-if="admin" class="position-absolute del-btn-ctr" @click="onClickDeleteCategoryBtn(category.id)">删除</v-btn>
     </div>
 </template>
 
@@ -56,10 +70,12 @@ const onClickDeleteCategoryBtn = async function (id) {
 .cursor-pointer {
     cursor: pointer;
 }
+
 .description-container {
     max-height: 100px;
     overflow: hidden;
 }
+
 .del-btn-ctr {
     top: 0;
     right: 10px;

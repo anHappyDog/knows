@@ -1,9 +1,11 @@
 <script setup>
-import { watch, onMounted, onBeforeUpdate, onBeforeUnmount,computed } from 'vue';
+import { watch, onMounted, onBeforeUpdate, onBeforeUnmount, computed } from 'vue';
 import { useRoute, onBeforeRouteUpdate } from "vue-router";
 import ArticleCard from '../Article/ArticleCard.vue';
 import { ref } from "vue";
 import axios from 'axios';
+import alertStore from "../../alertStore";
+const methods = alertStore.methods;
 const route = useRoute();
 const category_id = ref(route.params.category_id);
 const articles = ref(null);
@@ -11,11 +13,11 @@ const categoryInfo = ref(null);
 const admin = ref(false);
 const page = ref(1);
 const sizePerPage = 12;
-const pages = computed(()=>{
-  return articles.value?Math.ceil(articles.value.length/10):1;
+const pages = computed(() => {
+  return articles.value ? Math.ceil(articles.value.length / 10) : 1;
 });
-const slicedArticles = computed(()=> {
-  return articles.value?articles.value.slice((page.value-1)*sizePerPage,page.value*sizePerPage):[];
+const slicedArticles = computed(() => {
+  return articles.value ? articles.value.slice((page.value - 1) * sizePerPage, page.value * sizePerPage) : [];
 });
 onMounted(() => {
   fetchArticlesFromCategory();
@@ -28,12 +30,19 @@ const fetchArticlesFromCategory = async function () {
     if (res.data.status == 0) {
       articles.value = res.data["data"];
       categoryInfo.value = res.data['categoryInfo'];
-      console.log(res.data["data"]);
     } else {
-      console.log(res.data.message);
+      methods.addAlert({
+        type: "error",
+        message: res.data.message,
+        timeout: 3000
+      });
     }
   } catch (err) {
-    console.log(err.toString());
+    methods.addAlert({
+      type: "error",
+      message: err.toString(),
+      timeout: 3000
+    });
   }
 };
 

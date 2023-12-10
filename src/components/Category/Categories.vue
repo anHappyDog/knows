@@ -3,16 +3,26 @@ import { ref, onMounted } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
 import CategoryCard from "./CategoryCard.vue";
+import alertStore from "../../alertStore";
+const methods = alertStore.methods;
 const router = useRouter();
+const admin =  ref(false);
 const categories = ref(null);
-const admin = ref(false);
 const fetchCategories = async function () {
   try {
     const res = await axios.get(axios.defaults.baseURL + "/api/categories");
     categories.value = res.data["data"];
   } catch (err) {
-    console.log(err.toString());
+    methods.addAlert({
+      type: "error",
+      message: err.toString(),
+      timeout: 3000
+    });
   }
+};
+
+const onClickNewCategoryBtn = function () {
+  router.push("/main/newCategory");
 };
 
 const fetchAdmin = async function () {
@@ -29,13 +39,6 @@ const fetchAdmin = async function () {
   }
 };
 
-const onClickNewCategoryBtn = function () {
-  console.log("点击了新建分类按钮");
-  router.push("/main/newCategory");
-};
-
-
-
 onMounted(() => {
   fetchAdmin();
   fetchCategories();
@@ -49,10 +52,10 @@ onMounted(() => {
         <v-btn variant="outlined" @click="onClickNewCategoryBtn">新建板块</v-btn>
       </v-container>
       <v-container class="border boder-2 mt-4 mb-4 rounded-sm elevation-2">
-        <v-container  >
+        <v-container>
           <v-row>
-            <v-col cols="12" sm="12" md="6" lg="4"   v-for="category in categories" :key="category.id">
-              <CategoryCard :category="category" :admin="admin" />
+            <v-col cols="12" sm="12" md="6" lg="4" v-for="category in categories" :key="category.id">
+              <CategoryCard :admin="admin" :category="category" />
             </v-col>
           </v-row>
         </v-container>

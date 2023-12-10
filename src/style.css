@@ -64,6 +64,24 @@ button:focus-visible {
   padding: 2rem;
   text-align: center;
 } */
+.main-alert-container {
+
+}
+
+.vmd-video {
+  max-width: 70%; 
+  height: auto; 
+  display: block; 
+  margin: 0 auto; 
+}
+
+.log-msg {
+  position: absolute;
+  top: 4%;
+  right: 4%;
+  width: 20%;
+}
+
 .v-enter-active,
 .v-leave-active {
   transition: opacity 0.1s ease;

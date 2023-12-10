@@ -1,10 +1,12 @@
 <script setup>
-import { ref, onBeforeMount, watch } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import UserFollowers from './UserFollowers.vue';
 import UserFollowees from './UserFollowees.vue';
 import UserArticles from './UserArticles.vue';
+import alertStore from "../../alertStore";
+const methods = alertStore.methods;
 const route = useRoute();
 const id = ref(route.params.user_id);
 const userInfo = ref(null);
@@ -15,12 +17,15 @@ const router = useRouter();
 const avatarInput = ref(null);
 const coverInput = ref(null);
 const dialog = ref(false);
-const changedEmail= ref('');
+const changedEmail = ref('');
 const changedIntroduction = ref('');
 const changeForm = ref(null);
 
-watch(() => route.params.user_id, (newUserId) => {
-  id.value = newUserId;
+watch(() => route.params.user_id, () => {
+  id.value = route.params.user_id;
+  if (id.value !== undefined) {
+    fetchUserInfo();
+  }
 });
 const onClickFollowBtn = async function () {
   try {
@@ -28,13 +33,26 @@ const onClickFollowBtn = async function () {
       user_id: id.value,
     });
     if (res.data.status == 0) {
-      console.log("关注成功");
+      methods.addAlert({
+        type: "success",
+        message: "关注成功",
+        timeout: 3000,
+      });
       fetchUserInfo();
     } else {
-      console.log(res.data.message);
+      methods.addAlert({
+        type: "error",
+        message: res.data.message,
+        timeout: 3000,
+      });
     }
   } catch (err) {
-    console.log(err.toString());
+    methods.addAlert({
+
+      type: "error",
+      message: err.toString(),
+      timeout: 3000,
+    });
   }
 };
 
@@ -44,13 +62,25 @@ const onClickUnFollowBtn = async function () {
       user_id: id.value,
     });
     if (res.data.status == 0) {
-      console.log("取消关注成功");
+      methods.addAlert({
+        type: "success",
+        message: "取消关注成功",
+        timeout: 3000,
+      });
       fetchUserInfo();
     } else {
-      console.log(res.data.message);
+      methods.addAlert({
+        type: "error",
+        message: res.data.message,
+        timeout: 3000,
+      });
     }
   } catch (err) {
-    console.log(err.toString());
+    methods.addAlert({
+      type: "error",
+      message: err.toString(),
+      timeout: 3000,
+    });
   }
 };
 
@@ -62,11 +92,18 @@ const fetchUserInfo = async function () {
     if (res.data.status == 0) {
       userInfo.value = res.data["data"];
     } else {
-      console.log(res.data.message);
+      methods.addAlert({
+        type: "error",
+        message: res.data.message,
+        timeout: 3000,
+      });
     }
-    console.log(res.data);
   } catch (err) {
-    console.log(err.toString());
+    methods.addAlert({
+      type: "error",
+      message: err.toString(),
+      timeout: 3000,
+    });
   }
 };
 
@@ -77,10 +114,19 @@ const signOut = async function () {
       localStorage.removeItem("token");
       router.push("/signIn");
     } else {
-      console.log(res.data.message);
+
+      methods.addAlert({
+        type: "error",
+        message: res.data.message,
+        timeout: 3000,
+      });
     }
   } catch (err) {
-    console.log(err.toString());
+    methods.addAlert({
+      type: "error",
+      message: err.toString(),
+      timeout: 3000,
+    });
   }
 };
 
@@ -99,9 +145,7 @@ const selectAvatar = function (e) {
 };
 
 
-watch(id, () => {
-  fetchUserInfo();
-})
+
 
 
 const uploadCover = async function () {
@@ -117,12 +161,26 @@ const uploadCover = async function () {
     );
     if (res.data.status == 0) {
       fetchUserInfo();
-      console.log("成功上传封面");
+      methods.addAlert({
+        type: "success",
+        message: "成功上传封面",
+        timeout: 3000
+      })
     } else {
-      console.log(res.data.message);
+      methods.addAlert({
+        type: "error",
+        message: res.data.message,
+        timeout: 3000
+      });
     }
   } catch (err) {
-    console.log(err.toString());
+    methods.addAlert(
+      {
+        type: "error",
+        message: err.toString(),
+        timeout: 3000
+      }
+    );
   }
 };
 
@@ -139,19 +197,31 @@ const uploadAvatar = async function () {
     );
     if (res.data.status == 0) {
       fetchUserInfo();
-      console.log("成功上传头像");
+      methods.addAlert({
+        type: "success",
+        message: "成功上传头像",
+        timeout: 3000,
+      });
     } else {
-      console.log(res.data.message);
+      methods.addAlert({
+        type: "error",
+        message: res.data.message,
+        timeout: 3000,
+      });
     }
   } catch (err) {
-    console.log(err.toString());
+    methods.addAlert({
+      type: "error",
+      message: err.toString(),
+      timeout: 3000
+    })
   }
 };
 
-const openChangeUser = function() {
-  dialog = true;
-  changedEmail = userInfo.email;
-  changedIntroduction = userInfo.introduction;
+const openChangeUser = function () {
+  dialog.value = true;
+  changedEmail.value = userInfo.email;
+  changedIntroduction.value = userInfo.introduction;
 }
 
 const changedEmailRules = [
@@ -163,32 +233,41 @@ const changedIntroductionRules = [
   v => v.length <= 200 || '个人介绍不能超过200字符'
 ];
 
-const onClickChangeUserBtn = async function() {
+const onClickChangeUserBtn = async function () {
   const isValid = await changeForm.value.validate();
   if (!isValid.valid) {
     return;
   }
-  try{
-    const res = await axios.post(axios.defaults.baseURL + '/api/changeUserInfo',{
-      email:changedEmail.value,
+  try {
+    const res = await axios.post(axios.defaults.baseURL + '/api/changeUserInfo', {
+      email: changedEmail.value,
       introduction: changedIntroduction.value
     });
     if (res.data.status === 0) {
+      methods.addAlert({
+        type: "success",
+        message: "修改成功",
+        timeout: 3000
+      })
       fetchUserInfo();
       dialog.value = false;
     } else {
-      console.log(res.data.message);
+      methods.addAlert({
+        type: "error",
+        message: res.data.message,
+        timeout: 3000,
+      });
     }
-  } catch(err) {
-    console.log(err.toString());
+  } catch (err) {
+    methods.addAlert({
+      type: "error",
+      message: err.toString(),
+      timeout: 3000
+    })
   };
 }
 
-const onClickBackUserBtn = function() {
-  dialog = false;
-}
-
-onBeforeMount(() => {
+onMounted(() => {
   //   id.value = route.params.user_id;
   fetchUserInfo();
 
@@ -207,7 +286,7 @@ onBeforeMount(() => {
             <v-btn v-if="!userInfo.isSelf && !userInfo.is_followed" @click="onClickFollowBtn">关注</v-btn>
             <v-btn v-else-if="!userInfo.isSelf && userInfo.is_followed" @click="onClickUnFollowBtn">取消关注</v-btn>
             <v-btn v-if="userInfo.isSelf" class="ml-3" @click="signOut">退出登录</v-btn>
-            <v-btn v-if="userInfo.isSelf" class="ml-3" @click="dialog = true">修改资料</v-btn>
+            <v-btn v-if="userInfo.isSelf" class="ml-3" @click="openChangeUser">修改资料</v-btn>
           </v-container>
           <v-avatar size="120px" class="usr-profile-avatar" @click="avatarInput.click()">
             <v-img :src="axios.defaults.baseURL + userInfo.avatar" />
@@ -246,8 +325,11 @@ onBeforeMount(() => {
         <v-card>
           <v-container>
             <v-form ref="changeForm" @submit.prevent="onClickChangeUserBtn">
-              <v-text-field label="电子邮箱"  :placeholder="userInfo.email" :rules="changedEmailRules" v-model="changedEmail" />
-              <v-textarea label="个人介绍" :placeholder="userInfo.introduction" :rules="changedIntroductionRules" v-model="changedIntroduction" />
+              <v-text-field label="电子邮箱" :placeholder="userInfo.email" :rules="changedEmailRules"
+                v-model="changedEmail" />
+
+              <v-textarea label="个人介绍" :placeholder="userInfo.introduction" :rules="changedIntroductionRules"
+                v-model="changedIntroduction" />
               <v-btn class="mr-2" type="submit">确认修改</v-btn>
               <v-btn variant="plain" @click="dialog = false">返回</v-btn>
             </v-form>

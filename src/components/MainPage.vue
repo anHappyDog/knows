@@ -1,6 +1,10 @@
 <script setup>
-import { ref, onBeforeMount,provide } from 'vue';
+import { ref, onBeforeMount, provide } from 'vue';
 import router from '../router';
+import Alert from './Alert.vue';
+
+import alertStore from '../alertStore';
+const methods = alertStore.methods;
 const userid = ref('');
 const keyword = ref('');
 provide('keyword', keyword);
@@ -26,7 +30,7 @@ const onClickFeedBackBtn = function () {
 }
 
 const onSearchArticle = function () {
-    router.push('/main/articles');
+  router.push('/main/articles');
 }
 </script>
 
@@ -35,7 +39,7 @@ const onSearchArticle = function () {
     <v-app-bar app color="white" dark id="test">
       <v-toolbar-title>cc的混乱空间</v-toolbar-title>
       <v-spacer />
-      <v-text-field class="mt-4" @keyup.enter="onSearchArticle"  v-model="keyword" label="搜索" variant="underlined" />
+      <v-text-field class="mt-4" @keyup.enter="onSearchArticle" v-model="keyword" label="搜索" variant="underlined" />
       <v-spacer />
       <v-btn @click="onClickArticleBtn">
         文章
@@ -52,14 +56,20 @@ const onSearchArticle = function () {
       <v-btn @click="onClickWriteArticleBtn" variant="outlined" id="write-article-btn">
         写文章
       </v-btn>
+      <v-btn @click="methods.addAlert({
+        type: 'success',
+        message: 'You are be wished, so have a good day!',
+        timeout: 3000
+      });">Click Me</v-btn>
     </v-app-bar>
 
     <v-main>
+      <Alert />
       <div id="main-container">
         <router-view />
       </div>
-    </v-main>
 
+    </v-main>
   </div>
 </template>
 

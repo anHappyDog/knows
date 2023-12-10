@@ -10,7 +10,7 @@ import UserInfo from "./components/User/UserInfo.vue";
 import Categories from "./components/Category/Categories.vue";
 import NewCategory from "./components/Category/NewCategory.vue";
 import Category from "./components/Category/Category.vue";
-import ArticleSearch from "./components/Article/ArticleSearch.vue";
+import UpdateArticle from "./components/Article/UpdateArticle.vue";
 const routes = [
   { path: "/", component: SignIn, name: "SignIn" },
   { path: "/SignUp", component: SignUp, name: "SignUp" },
@@ -28,6 +28,11 @@ const routes = [
         path: "articles",
         component: Articles,
         name: "articles",
+      },
+      {
+        path: "article/:id/update",
+        component: UpdateArticle,
+        name: "updateArticle",
       },
       {
         path: "article/:id",
@@ -85,7 +90,6 @@ const router = createRouter({
   routes,
 });
 router.beforeEach((to, from) => {
-  console.log("your god");
   router.setLoading(true);
   if (to.name === "SignIn" || to.name === "SignUp") {
     if (localStorage.getItem("token")) {
@@ -101,7 +105,6 @@ router.beforeEach((to, from) => {
   }
 });
 router.afterEach(() => {
-  console.log("my love");
   router.setLoading(false);
 });
 export default router;

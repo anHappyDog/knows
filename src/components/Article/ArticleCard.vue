@@ -1,7 +1,10 @@
 <script setup>
 import {watch,ref} from 'vue';
+
 import { useRouter,useRoute } from 'vue-router';
 import axios from 'axios';
+import alertStore from "../../alertStore";
+const methods = alertStore.methods;
 const route = useRoute();
 const router = useRouter();
 const props = defineProps({
@@ -18,6 +21,10 @@ const props = defineProps({
 const onClickUserAvatar = function (id) {
     router.push('/main/user/' + id);
 }
+
+const goToCategory = function (category) {
+    router.push('/main/category/' + category);
+}
 </script>
 
 <template>
@@ -27,11 +34,12 @@ const onClickUserAvatar = function (id) {
             <v-avatar color="surface-variant" @click="onClickUserAvatar(article.author_id)" class="user-avatar">
                 <v-img :src="axios.defaults.baseURL + article.author_avatar" />
             </v-avatar>
-            <v-btn variant="plain" @click="onClickUserAvatar(article.author_id)">{{ article.author }}</v-btn>
+            <v-btn variant="plain"  @click="onClickUserAvatar(article.author_id)">{{ article.author }}</v-btn>
         </v-container>
         <v-container>
-            <p>所属板块:{{ article.category }}</p>
-            <p>发布时间:{{ article.date }}</p>
+            <v-btn variant="plain" @click="goToCategory(article.category_id)">{{ article.category }}</v-btn>
+            <!-- <p  @click="" class="text-grey cursor-pointer">:{{ article.category }}</p> -->
+            <p>{{ article.date }}前</p>
         </v-container>
 
         <v-card-actions>

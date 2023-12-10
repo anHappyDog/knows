@@ -60,7 +60,7 @@ VMdEditor.use(githubTheme,{
 
 VMdPreview.use(githubTheme,{
   Hljs: hljs,
-});
+}).use(createVideoPlugin());
 
 
 const loading = ref(false);

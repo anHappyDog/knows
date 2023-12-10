@@ -2,9 +2,12 @@
 import axios from 'axios';
 import { useRoute,useRouter } from 'vue-router';
 import { ref, computed, onMounted,watch } from 'vue';
+import alertStore from '../../alertStore';
+const methods = alertStore.methods; 
 const followers = ref(null);
 const route = useRoute();
 const router = useRouter();
+const user_id = ref(route.params.user_id);
 const props = defineProps({
     user_id: {
         required: true
@@ -13,16 +16,23 @@ const props = defineProps({
 const fetchFollowers = async function () {
     try {
         const res = await axios.get(
-            axios.defaults.baseURL + "/api/user/" + route.params.user_id + "/followers"
+            axios.defaults.baseURL + "/api/user/" + user_id.value + "/followers"
         );
         if (res.data.status == 0) {
             followers.value = res.data["data"];
-            console.log(followers.value);
         } else {
-            console.log(res.data.message);
+            methods.addAlert({
+                type: "error",
+                message: res.data.message,
+                timeout: 3000
+            });
         }
     } catch (err) {
-        console.log(err.toString());
+        methods.addAlert({
+            type: "error",
+            message: err.toString(),
+            timeout: 3000
+        });
     }
 };
 const sizePerPage = 12;
@@ -38,7 +48,10 @@ onMounted(() => {
     fetchFollowers();
 })
 watch (()=>route.params.user_id,()=>{
-    fetchFollowers();
+    user_id.value = route.params.user_id;
+    if (route.params.user_id) {
+        fetchFollowers();
+    }
 });
 
 const onClickFollowBtn = async function (id) {
@@ -47,21 +60,51 @@ const onClickFollowBtn = async function (id) {
       user_id: id,
     });
     if (res.data.status == 0) {
-      console.log("关注成功");
-      fetchUserInfo();
-      fetchFollowees();
+      methods.addAlert({
+        type: "success",
+        message:"关注成功",
+        timeout:3000
+      })
+      fetchFollowers();
     } else {
-      console.log(res.data.message);
+        methods.addAlert({
+            type: "error",
+            message: res.data.message,
+            timeout: 3000
+        });
     }
   } catch (err) {
-    console.log(err.toString());
+    methods.addAlert({
+        type: "error",
+        message: err.toString(),
+        timeout: 3000
+    });
   }
 };
 const goToUserProfile = function(id) {
-    console.log(id);
     router.push("/main/user/" + id);
 }
-
+const onClickUnFollowBtn = async function (id) {
+    try {
+        const res = await axios.post(axios.defaults.baseURL + "/api/unfollow", {
+            user_id: id,
+        });
+        if (res.data.status == 0) {
+            methods.addAlert(
+                {
+                    type: "success",
+                    message: "取消关注成功",
+                    timeout: 3000
+                }
+            );
+            fetchFollowers();
+        } else {
+            console.log(res.data.message);
+        }
+    } catch (err) {
+        console.log(err.toString());
+    }
+};
 </script>
 
 <template>
@@ -72,7 +115,8 @@ const goToUserProfile = function(id) {
                     <v-card-title @click="goToUserProfile(follower.id)" class="cursor-pointer">{{ follower.username }}</v-card-title>
                     <v-card-subtitle>{{ follower.email }}</v-card-subtitle>
                     <v-card-actions>
-                        <v-btn @click="onClickFollowBtn(follower.id)">关注</v-btn>
+                        <v-btn v-if="follower.is_followed === false" @click="onClickFollowBtn(follower.id)">关注</v-btn>
+                        <v-btn v-if="follower.is_followed"  @click="onClickUnFollowBtn(follower.id)">取消关注</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-col>

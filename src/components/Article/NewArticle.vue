@@ -4,6 +4,8 @@ import { useRouter } from "vue-router";
 import axios from "axios";
 import ImageBox from "./ImageBox.vue";
 import VideoBox from "./VideoBox.vue";
+import alertStore from "../../alertStore";
+const methods = alertStore.methods;
 const router = useRouter();
 const content = ref("");
 const cover = ref(null);
@@ -22,7 +24,11 @@ const fetchCategories = async function () {
     const res = await axios.get(axios.defaults.baseURL + "/api/categories");
     categories.value = res.data["data"];
   } catch (err) {
-    console.log(err.toString());
+    methods.addAlert({
+      type: "error",
+      message: err.toString(),
+      timeout: 3000
+    });
   }
 };
 
@@ -30,7 +36,11 @@ const onClickBackBtn = function () {
   try {
     router.back();
   } catch (err) {
-    console.log(err.toString());
+    methods.addAlert({
+      type: "error",
+      message: err.toString(),
+      timeout: 3000
+    });
   }
 };
 const getCategoryId = function () {
@@ -43,6 +53,19 @@ const getCategoryId = function () {
 const onClickReleseBtn = async function () {
   const isValid = await form.value.validate();
   if (!isValid.valid) {
+    methods.addAlert({
+      type: "error",
+      message: "请先检查您的输入",
+      timeout: 3000
+    });
+    return;
+  }
+  if (content.value === '') {
+    methods.addAlert({
+      type: "error",
+      message:  "文章内容不能为空",
+      timeout: 3000
+    });
     return;
   }
   try {
@@ -55,12 +78,25 @@ const onClickReleseBtn = async function () {
     formData.append("category_id", getCategoryId(category_name.value));
     const res = await axios.post(axios.defaults.baseURL + "/api/newArticle", formData);
     if (res.data.status === 0) {
-      console.log("成功发布文章");
+      methods.addAlert({
+        type: "success",
+        message: "发布成功",
+        timeout: 3000
+      });
+      router.push("/main/article/" + res.data.data.id);
     } else {
-      console.log(res.data.message);
+      methods.addAlert({
+        type: "error",
+        message: res.data.message,
+        timeout: 3000
+      });
     }
   } catch (err) {
-    console.log(err.toString());
+    methods.addAlert({
+      type: "error",
+      message: err.toString(),
+      timeout: 3000
+    });
   }
 };
 const setCover = function (e) {
@@ -81,7 +117,7 @@ onMounted(() => {
 
 <template>
   <Transition>
-    <div v-if="categories">
+    <div v-if="categories" style="{ z-index: 10;}">
       <v-container class="border border-2 rounded-sm elevation-2  mb-4 mt-6">
         <v-form ref="form" @submit.prevent="onClickReleseBtn">
           <v-text-field label="标题" v-model="title" :rules="titleRules" />
@@ -100,7 +136,7 @@ onMounted(() => {
         </v-form>
 
       </v-container>
-      <v-container class="border border-2 rounded-sm elevation-2 pa-0">
+      <v-container class="border border-2 rounded-sm elevation-2 pa-0 mb-4">
         <v-md-editor v-model="content" height="400px"></v-md-editor>
       </v-container>
       <v-dialog v-model="dialog" width="auto">
@@ -115,13 +151,13 @@ onMounted(() => {
           </v-tabs>
           <v-window v-model="tab">
             <v-window-item>
-              <ImageBox/>
+              <ImageBox />
             </v-window-item>
             <v-window-item>
               <VideoBox />
             </v-window-item>
           </v-window>
-          <v-btn class="mt-auto" @click="dialog=false;">关闭</v-btn>
+          <v-btn class="mt-auto" @click="dialog = false;">关闭</v-btn>
         </v-card>
 
       </v-dialog>

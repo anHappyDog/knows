@@ -2,10 +2,13 @@
 import axios from "axios";
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
+import alertStore from "../../alertStore";
+const methods = alertStore.methods;
 const feedbacks = ref(null);
 const router = useRouter();
 const page = ref(1);
 const admin = ref(false);
+
 const pages = computed(() => {
     return feedbacks.value ? Math.ceil(feedbacks.value.length / 10) : 1;
 });
@@ -17,16 +20,22 @@ const slicedFeedbacks = computed(() =>
 const fetchFeedbacks = async function () {
     try {
         const res = await axios.get(axios.defaults.baseURL + "/api/feedbacks");
-        console.log(res);
         if (res.data.status === 0) {
             feedbacks.value = res.data.data;
             admin.value = res.data.admin;
-            console.log(feedbacks.value);
         } else {
-            console.log(feedbacks.message);
+            methods.addAlert({
+                type: "error",
+                message: res.data.message,
+                timeout: 3000
+            });
         }
     } catch (err) {
-        console.log(err.toString());
+        methods.addAlert({
+            type: "error",
+            message: err.toString(),
+            timeout: 3000
+        });
     }
 
 };

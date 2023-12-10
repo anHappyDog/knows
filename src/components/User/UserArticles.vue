@@ -1,23 +1,28 @@
 <script setup>
 import ArticleCard from '../Article/ArticleCard.vue';
 import axios from 'axios';
-import { ref, computed,onMounted,watch } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
+import alertStore from '../../alertStore';
+const methods = alertStore.methods;
 const route = useRoute();
+const user_id = ref(route.params.user_id);
 const props = defineProps({
-    user_id : {
+    user_id: {
         required: true
     }
 });
-watch (()=>route.params.user_id,()=>{
-    fetchArticles();
+watch(() => route.params.user_id, () => {
+    user_id.value = route.params.user_id;
+    if (user_id.value) {
+        fetchArticles();
+    }
 });
 const articles = ref(null);
 const page = ref(1);
 const sizePerPage = 12;
-const pages = computed(()=>{return articles.value?Math.ceil(articles.value.length / 8):1; });
+const pages = computed(() => { return articles.value ? Math.ceil(articles.value.length / 8) : 1; });
 onMounted(() => {
-    console.log("user article is mounted");
     fetchArticles();
 
 })
@@ -25,16 +30,19 @@ onMounted(() => {
 const fetchArticles = async function () {
     try {
         const res = await axios.get(
-            axios.defaults.baseURL + "/api/user/" + route.params.user_id + "/articles"
+            axios.defaults.baseURL + "/api/user/" + user_id.value + "/articles"
         );
         articles.value = res.data["data"];
-        console.log(articles.value);
     } catch (e) {
-        console.log(e.toString());
+        methods.addAlert({
+            type: "error",
+            message: e.toString(),
+            timeout: 3000
+        });
     }
 };
-const slicedArticles = computed(()=>{
-    return articles.value?articles.value.slice((page.value - 1) * sizePerPage,page.value * sizePerPage):[];
+const slicedArticles = computed(() => {
+    return articles.value ? articles.value.slice((page.value - 1) * sizePerPage, page.value * sizePerPage) : [];
 });
 </script>
 
@@ -48,7 +56,7 @@ const slicedArticles = computed(()=>{
             </v-row>
             <v-pagination :length="pages" v-model="page"></v-pagination>
         </v-container>
-        
+
     </Transition>
 </template>
 

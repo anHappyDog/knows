@@ -1,8 +1,9 @@
 <script setup>
 import { computed, ref, onMounted,inject,watch } from "vue";
 import axios from "axios";
-import router from "../../router";
 import ArticleCard from "../Article/ArticleCard.vue";
+import alertStore from "../../alertStore";
+const methods = alertStore.methods;
 const articles = ref(null);
 const page = ref(1);
 const keyword = inject('keyword');
@@ -14,7 +15,11 @@ const getArticles = async function () {
     const res = await axios.get(axios.defaults.baseURL + "/api/articles");
     articles.value = res.data["data"];
   } catch (err) {
-    console.log(err.toString());
+    methods.addAlert({
+        type: "error",
+        message: err.toString(),
+        timeout: 3000
+      });
   }
 };
 
@@ -23,19 +28,28 @@ const getArticles = async function () {
 
 
 const fetchArticles = async function() {
-  if (!keyword||keyword.value === "") {
+  if (!keyword.value||keyword.value === "") {
     getArticles();
-  }
+    return;
+  } 
   page.value = 1;
   axios.get(axios.defaults.baseURL + "/api/articles/search/" + keyword.value).then(res=>{
     if (res.data.status !== 0) {
-      console.log(res.data.message);
+      methods.addAlert({
+        type: "error",
+        message: res.data.message,
+        timeout: 3000
+      });
       return;
     } else {
       articles.value = res.data.data;
     }
   }).catch(err=>{
-    console.log(err.toString());
+    methods.addAlert({
+        type: "error",
+        message: err.toString(),
+        timeout: 3000
+      });
   })
 }
 

@@ -2,14 +2,20 @@
 import axios from "axios";
 import { useRouter } from "vue-router";
 import { ref } from "vue";
+import alertStore from "../../alertStore";
+const methods = alertStore.methods;
 const title = ref("");
 const content = ref("");
 const form = ref(null);
 const router = useRouter();
-const onClickReleaseBtn = async function() {
+const onClickReleaseBtn = async function () {
     const isValid = await form.value.validate();
     if (!isValid.valid) {
-        console.log("请先检查您的输入");
+        methods.addAlert({
+            type: "error",
+            message: "请先检查您的输入",
+            timeout: 3000
+        });
         return;
     }
     try {
@@ -18,13 +24,25 @@ const onClickReleaseBtn = async function() {
             content: content.value,
         });
         if (res.data.status == 0) {
-            console.log("反馈成功");
+            methods.addAlert({
+                type: "success",
+                message: "发布反馈成功",
+                timeout: 3000
+            });
             router.push("/main/feedbacks");
         } else {
-            console.log(res.data.message);
+            methods.addAlert({
+                type: "error",
+                message: res.data.message,
+                timeout: 3000
+            });
         }
     } catch (err) {
-        console.log(err.toString());
+        methods.addAlert({
+            type: "error",
+            message: err.toString(),
+            timeout: 3000
+        });
     }
 };
 
@@ -46,7 +64,7 @@ const contentRules = [
                 <v-text-field v-model="title" label="标题" :rules="titleRules"></v-text-field>
                 <v-textarea v-model="content" label="内容" :rules="contentRules"></v-textarea>
                 <v-btn @click="onClickReleaseBtn">提交</v-btn>
-                </v-form>
+            </v-form>
         </v-sheet>
     </v-container>
 </template>
@@ -55,6 +73,7 @@ const contentRules = [
 #feedback-panel {
     padding: 20px;
 }
+
 #feedback-container {
     display: flex;
     flex-direction: column;
