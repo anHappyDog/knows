@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os 
+
 from configparser import ConfigParser
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -30,10 +31,19 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+LANGUAGE_CODE = 'zh-hans'  # 对于简体中文
+# 或者
+# LANGUAGE_CODE = 'zh-hant'  # 对于繁体中文
+
+USE_I18N = True
+
+TIME_ZONE = 'Asia/Shanghai'  # 选择合适的时区
+
 
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
     'api.apps.ApiConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -44,6 +54,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -111,11 +122,6 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
-USE_I18N = True
 
 USE_TZ = True
 
@@ -129,7 +135,13 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-
+CSRF_TRUSTED_ORIGINS = ['https://database.api.lonelywatch.com','http://localhost:4000','http://localhost:5173','https://database.lonelywatch.com']
+CORS_ALLOWED_ORIGINS = ['http://localhost:5173','http://localhost:4000','https://database.lonelywatch.com']
+CORS_ALLOW_CREDENTIALS = True
 MEDIA_ROOT = os.path.join(BASE_DIR, 'assets')
-MEDIA_URL = '/assets/'
+MEDIA_URL = 'assets/'
+
+SESSION_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True 
