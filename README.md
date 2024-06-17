@@ -1,29 +1,5 @@
-# cc-test-02
+Asuka ，一款基于Vue3的类知乎的平台网站，基于用户系统，能够发表基于Markdown文章，对文章进行收藏，点赞与评论，实现了讨论区与用户反馈功能。用户也能够添加好友。
 
-This template should help get you started developing with Vue 3 in Vite.
+---
 
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
+这是数据库的课设作业，其实当时我是想选PostreSQL代码解析的，只是没有组队就选不了来着，后面选了这个。数据库设计的不太行，至少没能用上太多的理论知识，后面或许能在学学？
